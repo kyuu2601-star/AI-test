@@ -41,8 +41,8 @@
 
     <script>
         // MẸO: Chia nhỏ Key để trình duyệt hiểu nhưng Bot quét của Google thì không
-        const _k = ["AIzaSyBK", "G9Fy2-I", "LcfY1ZX", "gDwNr0AI", "kKqmWdA"];
-        const API_KEY = _k.join(""); 
+        const API_KEY = "__API_KEY_PLACEHOLDER__";
+        const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
         
         // Model 2.5 Flash fen vừa check được
         const MODEL = "gemini-2.5-flash";
