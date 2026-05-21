@@ -1,0 +1,23 @@
+name: Deploy DalatOS AI
+on:
+  push:
+    branches:
+      - main  # Hoặc master tùy nhánh của fen
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Inject API Key
+        run: |
+          # Lệnh này sẽ tìm chữ __API_KEY_PLACEHOLDER__ và thay bằng Key trong Secret
+          sed -i "s/__API_KEY_PLACEHOLDER__/${{ secrets.GEMINI_API_KEY }}/g" test-ai.html
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: . # Thư mục chứa file html của fen
+          branch: gh-pages # Nhánh mà GitHub Pages sẽ dùng để hiển thị web
