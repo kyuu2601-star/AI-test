@@ -15,17 +15,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Replace Placeholder with Real Key
+      - name: Inject API Key
+        # Bản này dùng biến môi trường để đảm bảo không bị lẫn lộn giữa tên và giá trị
         env:
-          REAL_KEY: ${{ secrets.GEMINI_API_KEY }}
+          MY_SECRET_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # Tìm tất cả các file .html và thay thế nhãn placeholder bằng Key thật
-          # Cách này chấp hết mọi loại folder hoa hay thường
-          find . -name "*.html" -exec perl -i -pe "s/__API_KEY_PLACEHOLDER__/\$ENV{REAL_KEY}/g" {} +
-          echo "✅ Đã quét và tiêm Key vào toàn bộ file HTML tìm thấy!"
+          # 1. Tìm file index.html (chấp mọi loại đường dẫn)
+          # 2. Thay thế chữ GEMINI_API_KEY bằng giá trị thật từ biến MY_SECRET_KEY
+          # Dùng dấu ' ' bao quanh lệnh perl để bảo vệ biến môi trường
+          find . -name "index.html" -exec perl -i -pe 's/GEMINI_API_KEY/$ENV{MY_SECRET_KEY}/g' {} +
+          find . -name "index.html" -exec perl -i -pe 's/__API_KEY_PLACEHOLDER__/$ENV{MY_SECRET_KEY}/g' {} +
+          echo "✅ Đã thay thế xong giá trị thực vào file!"
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: .
+          folder: . 
           branch: gh-pages
+          clean: true
