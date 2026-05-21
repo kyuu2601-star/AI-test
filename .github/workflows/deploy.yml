@@ -2,6 +2,10 @@ name: Deploy DalatOS AI
 on:
   push:
     branches: [ main ]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -11,23 +15,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Dùng cách này an toàn hơn sed: thay trực tiếp nội dung file
       - name: Replace Placeholder with Real Key
         env:
           REAL_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # Kiểm tra xem file có tồn tại không trước khi làm
-          if [ -f "AI-test/index.html" ]; then
-            # Thay thế chính xác nhãn __API_KEY_PLACEHOLDER__ bằng giá trị trong Secret
-            perl -i -pe "s/__API_KEY_PLACEHOLDER__/$REAL_KEY/g" AI-test/index.html
-            echo "Đã tiêm Key thành công vào AI-test/index.html"
-          else
-            echo "LỖI: Không tìm thấy file tại đường dẫn AI-test/index.html"
-            exit 1
-          fi
+          # Tìm tất cả các file .html và thay thế nhãn placeholder bằng Key thật
+          # Cách này chấp hết mọi loại folder hoa hay thường
+          find . -name "*.html" -exec perl -i -pe "s/__API_KEY_PLACEHOLDER__/\$ENV{REAL_KEY}/g" {} +
+          echo "✅ Đã quét và tiêm Key vào toàn bộ file HTML tìm thấy!"
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: .        # Đẩy toàn bộ folder lên
+          folder: .
           branch: gh-pages
