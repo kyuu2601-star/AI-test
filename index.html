@@ -1,44 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DalatOS AI - Tốc Độ Cao</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #020617; }
+        .glass-chat { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.05); }
+        .user-msg { background: #f59e0b; color: #020617; border-radius: 1.5rem 1.5rem 0 1.5rem; }
+        .ai-msg { background: #1e293b; color: #e2e8f0; border-radius: 1.5rem 1.5rem 1.5rem 0; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4">
 
-const API_KEY = "AIzaSyAHALv9FRkjZ0ruIsJbG95IjSpRCODaLYs";
-const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    <div class="w-full max-w-lg mb-4 mt-4">
+        <h1 class="text-xl font-black italic text-amber-500 tracking-tighter">DALAT OS <span class="text-white">AI DIRECT</span></h1>
+        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Kết nối trực tiếp - Tốc độ bàn thờ</p>
+    </div>
 
-async function askAI() {
-    const input = document.getElementById('ai-input');
-    const content = document.getElementById('chat-content');
-    const msg = input.value.trim();
-    if (!msg) return;
+    <div class="w-full max-w-lg flex-1 flex flex-col glass-chat rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
+        <div id="chat-content" class="flex-1 overflow-y-auto p-5 space-y-4 scrollbar-hide flex flex-col">
+            <div class="ai-msg p-4 text-sm max-w-[85%] shadow-sm">
+                Chào fen! Tui đã được xích lại bằng Website Restriction rồi. Thử nhắn gì đó xem tui rep nhanh không nhé! 🛵💨
+            </div>
+        </div>
 
-    // Hiện tin nhắn User ngay lập tức
-    content.innerHTML += `<div class="user-msg p-3 mb-2 bg-amber-500/20 rounded-xl ml-auto text-right w-fit">${msg}</div>`;
-    input.value = '';
-    
-    // Hiệu ứng "Đang gõ" giả lập để user không thấy lâu
-    const loadingId = "ld-" + Date.now();
-    content.innerHTML += `<div id="${loadingId}" class="ai-msg p-3 mb-2 bg-slate-800 rounded-xl w-fit italic text-slate-400">Thổ địa đang rep...</div>`;
-    content.scrollTop = content.scrollHeight;
+        <div class="p-4 bg-slate-900/80 flex gap-2 items-center">
+            <input type="text" id="ai-input" placeholder="Hỏi lẹ đi fen..." 
+                class="flex-1 bg-slate-800 border border-slate-700 rounded-2xl px-5 py-3 outline-none focus:border-amber-500 text-white text-sm">
+            <button onclick="askAI()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-5 py-3 rounded-2xl font-black text-xs transition-all active:scale-95">
+                GỬI
+            </button>
+        </div>
+    </div>
 
-    try {
-        // GỌI THẲNG GOOGLE - KHÔNG QUA TRUNG GIAN
-        const response = await fetch(URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: "Bạn là Thổ địa Đà Lạt, trả lời cực ngắn: " + msg }] }]
-            })
-        });
+    <script>
+        // --- CẤU HÌNH API ---
+        const API_KEY = "AIzaSyAHALv9FRkjZ0ruIsJbG95IjSpRCODaLYs";
+        // Sử dụng v1beta và gemini-1.5-flash-latest để đạt tốc độ cao nhất
+        const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
 
-        const data = await response.json();
-        document.getElementById(loadingId).remove();
+        async function askAI() {
+            const input = document.getElementById('ai-input');
+            const content = document.getElementById('chat-content');
+            const msg = input.value.trim();
+            
+            if (!msg) return;
 
-        if (data.candidates && data.candidates[0]) {
-            const txt = data.candidates[0].content.parts[0].text;
-            content.innerHTML += `<div class="ai-msg p-3 mb-2 bg-slate-800 rounded-xl w-fit text-slate-200">${txt}</div>`;
-        } else {
-            content.innerHTML += `<div class="p-3 text-rose-400 text-xs">Lỗi: ${data.error?.message || 'Check Console'}</div>`;
+            // 1. Hiện tin nhắn User
+            content.innerHTML += `
+                <div class="user-msg p-4 text-sm max-w-[85%] self-end font-medium shadow-md">
+                    ${msg}
+                </div>`;
+            input.value = '';
+            content.scrollTop = content.scrollHeight;
+
+            // 2. Hiện trạng thái đang xử lý
+            const loadingId = "ld-" + Date.now();
+            content.innerHTML += `
+                <div id="${loadingId}" class="ai-msg p-4 text-sm max-w-[85%] italic text-slate-400 animate-pulse">
+                    Đang lùng sục...
+                </div>`;
+            content.scrollTop = content.scrollHeight;
+
+            try {
+                // 3. FETCH TRỰC TIẾP
+                const response = await fetch(URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ 
+                            parts: [{ 
+                                text: `Bạn là "Thổ địa Dalat OS", trả lời cực kỳ ngắn gọn, phong cách dân phượt Đà Lạt. Câu hỏi: ${msg}` 
+                            }] 
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Xóa trạng thái loading
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) loadingEl.remove();
+
+                if (data.candidates && data.candidates[0]) {
+                    const aiText = data.candidates[0].content.parts[0].text;
+                    content.innerHTML += `
+                        <div class="ai-msg p-4 text-sm max-w-[85%] shadow-md leading-relaxed">
+                            ${aiText}
+                        </div>`;
+                } else {
+                    throw new Error(data.error?.message || "AI từ chối trả lời");
+                }
+
+            } catch (e) {
+                if (document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                content.innerHTML += `
+                    <div class="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] rounded-xl text-center">
+                        Lỗi: ${e.message} <br> Fen check lại API Key hoặc link Restriction nhé!
+                    </div>`;
+            }
+            
+            content.scrollTop = content.scrollHeight;
         }
-    } catch (e) {
-        document.getElementById(loadingId).remove();
-        content.innerHTML += `<div class="p-3 text-rose-400 text-xs">Kết nối thất bại!</div>`;
-    }
-    content.scrollTop = content.scrollHeight;
-}
+
+        // Hỗ trợ phím Enter
+        document.getElementById('ai-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') askAI();
+        });
+    </script>
+</body>
+</html>
