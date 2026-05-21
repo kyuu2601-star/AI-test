@@ -17,18 +17,19 @@ jobs:
 
       - name: Inject API Key
         env:
-          G_KEY: "${{ secrets.GEMINI_API_KEY }}"
+          G_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # Dùng nháy kép cho toàn bộ lệnh để chắc chắn lấy được giá trị Secret
-          # Quét và thay thế cho mọi file index.html trong repo
-          find . -name "index.html" -exec sed -i "s/GEMINI_API_KEY/$G_KEY/g" {} +
-          find . -name "__API_KEY_PLACEHOLDER__" -exec sed -i "s/__API_KEY_PLACEHOLDER__/$G_KEY/g" {} +
-          echo "✅ Đã tiêm Key xong."
+          # Dùng dấu @ làm phân cách để Key có dấu / cũng không bị lỗi
+          # Tìm file index.html và thay TẤT CẢ các loại nhãn nghi ngờ
+          
+          find . -name "index.html" -exec sed -i "s@GEMINI_API_KEY@$G_KEY@g" {} +
+          find . -name "index.html" -exec sed -i "s@__API_KEY_PLACEHOLDER__@$G_KEY@g" {} +
+          
+          echo "✅ Đã tiêm mã thành công!"
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          # Dùng dấu chấm (.) để lấy toàn bộ gốc Repo, chấp hết mọi folder
           folder: . 
           branch: gh-pages
           clean: true
