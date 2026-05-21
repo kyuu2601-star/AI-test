@@ -2,22 +2,24 @@ name: Deploy DalatOS AI
 on:
   push:
     branches:
-      - main  # Hoặc master tùy nhánh của fen
+      - main  # Hoặc master tùy vào tên nhánh chính của repo fen
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Cấp quyền ghi để tạo nhánh gh-pages
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Inject API Key
         run: |
-          # Lệnh này sẽ tìm chữ __API_KEY_PLACEHOLDER__ và thay bằng Key trong Secret
-          sed -i "s/__API_KEY_PLACEHOLDER__/${{ secrets.GEMINI_API_KEY }}/g" test-ai.html
+          # Tìm nhãn __API_KEY_PLACEHOLDER__ trong index.html và thay bằng Secret
+          sed -i "s/__API_KEY_PLACEHOLDER__/${{ secrets.GEMINI_API_KEY }}/g" index.html
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: . # Thư mục chứa file html của fen
-          branch: gh-pages # Nhánh mà GitHub Pages sẽ dùng để hiển thị web
+          folder: .        # Folder chứa index.html
+          branch: gh-pages # Nhánh build để chạy website
