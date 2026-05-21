@@ -3,45 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DalatOS AI - Tốc Độ Cao</title>
+    <title>DalatOS AI - V2.5 High Speed</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="env.js"></script>
     <style>
-        body { background-color: #020617; }
-        .glass-chat { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.05); }
-        .user-msg { background: #f59e0b; color: #020617; border-radius: 1.5rem 1.5rem 0 1.5rem; }
-        .ai-msg { background: #1e293b; color: #e2e8f0; border-radius: 1.5rem 1.5rem 1.5rem 0; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        body { background-color: #020617; color: #e2e8f0; font-family: sans-serif; }
+        .glass-panel { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+        .user-msg { background: #f59e0b; color: #020617; align-self: flex-end; border-radius: 1.2rem 1.2rem 0 1.2rem; }
+        .ai-msg { background: #1e293b; color: #f1f5f9; align-self: flex-start; border-radius: 1.2rem 1.2rem 1.2rem 0; }
+        @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .loading { animation: pulse-soft 1.5s infinite; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-4">
+<body class="min-h-screen flex flex-col p-4 items-center">
 
-    <div class="w-full max-w-lg mb-4 mt-4">
-        <h1 class="text-xl font-black italic text-amber-500 tracking-tighter">DALAT OS <span class="text-white">AI DIRECT</span></h1>
-        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Kết nối trực tiếp - Tốc độ bàn thờ</p>
-    </div>
-
-    <div class="w-full max-w-lg flex-1 flex flex-col glass-chat rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
-        <div id="chat-content" class="flex-1 overflow-y-auto p-5 space-y-4 scrollbar-hide flex flex-col">
-            <div class="ai-msg p-4 text-sm max-w-[85%] shadow-sm">
-                Chào fen! Tui đã được xích lại bằng Website Restriction rồi. Thử nhắn gì đó xem tui rep nhanh không nhé! 🛵💨
+    <div class="w-full max-w-xl flex flex-col h-[90vh]">
+        <div class="mb-6">
+            <h1 class="text-2xl font-black italic text-amber-500 tracking-tighter">DALAT OS <span class="text-white text-lg">AI v2.5</span></h1>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Direct Connection: Online</p>
             </div>
         </div>
 
-        <div class="p-4 bg-slate-900/80 flex gap-2 items-center">
-            <input type="text" id="ai-input" placeholder="Hỏi lẹ đi fen..." 
-                class="flex-1 bg-slate-800 border border-slate-700 rounded-2xl px-5 py-3 outline-none focus:border-amber-500 text-white text-sm">
-            <button onclick="askAI()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-5 py-3 rounded-2xl font-black text-xs transition-all active:scale-95">
-                GỬI
-            </button>
+        <div class="flex-1 flex flex-col glass-panel rounded-[2rem] overflow-hidden shadow-2xl">
+            <div id="chat-content" class="flex-1 overflow-y-auto p-6 space-y-4 flex flex-col scroll-smooth">
+                <div class="ai-msg p-4 text-sm shadow-lg border border-white/5">
+                    Hú fen! Tui đã được nâng cấp lên **Gemini 2.5 Flash**. Tốc độ bây giờ là vô đối. Fen thử hỏi gì đi!
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-900/80 border-t border-white/5 flex gap-2">
+                <input type="text" id="ai-input" placeholder="Nhắn gì đó lẹ đi fen..." 
+                    class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-5 py-3 text-sm outline-none focus:border-amber-500 transition-all">
+                <button onclick="askAI()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-6 py-3 rounded-xl font-black text-xs transition-all active:scale-95">
+                    GỬI
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- CẤU HÌNH API ---
-        const API_KEY = "AIzaSyAHALv9FRkjZ0ruIsJbG95IjSpRCODaLYs";
-        // Sử dụng v1beta và gemini-1.5-flash-latest để đạt tốc độ cao nhất
-        const URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
         async function askAI() {
             const input = document.getElementById('ai-input');
             const content = document.getElementById('chat-content');
@@ -49,64 +51,54 @@
             
             if (!msg) return;
 
-            // 1. Hiện tin nhắn User
-            content.innerHTML += `
-                <div class="user-msg p-4 text-sm max-w-[85%] self-end font-medium shadow-md">
-                    ${msg}
-                </div>`;
+            // 1. User Message
+            content.innerHTML += `<div class="user-msg p-4 text-sm max-w-[85%] font-medium shadow-md">${msg}</div>`;
             input.value = '';
             content.scrollTop = content.scrollHeight;
 
-            // 2. Hiện trạng thái đang xử lý
+            // 2. Trạng thái Loading
             const loadingId = "ld-" + Date.now();
             content.innerHTML += `
-                <div id="${loadingId}" class="ai-msg p-4 text-sm max-w-[85%] italic text-slate-400 animate-pulse">
-                    Đang lùng sục...
+                <div id="${loadingId}" class="ai-msg p-4 text-sm max-w-[85%] italic text-slate-400 loading">
+                    Thổ địa đang soạn tin...
                 </div>`;
             content.scrollTop = content.scrollHeight;
 
+            // 3. Gọi API sử dụng thông tin từ env.js
+            const API_URL = `https://generativelanguage.googleapis.com/${_ENV.VERSION}/models/${_ENV.MODEL}:generateContent?key=${_ENV.KEY}`;
+
             try {
-                // 3. FETCH TRỰC TIẾP
-                const response = await fetch(URL, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ 
-                            parts: [{ 
-                                text: `Bạn là "Thổ địa Dalat OS", trả lời cực kỳ ngắn gọn, phong cách dân phượt Đà Lạt. Câu hỏi: ${msg}` 
-                            }] 
-                        }]
+                        contents: [{ parts: [{ text: "Bạn là Thổ địa Đà Lạt, trả lời cực ngắn: " + msg }] }]
                     })
                 });
 
                 const data = await response.json();
                 
-                // Xóa trạng thái loading
-                const loadingEl = document.getElementById(loadingId);
-                if (loadingEl) loadingEl.remove();
+                // Xóa loading
+                document.getElementById(loadingId).remove();
 
                 if (data.candidates && data.candidates[0]) {
                     const aiText = data.candidates[0].content.parts[0].text;
-                    content.innerHTML += `
-                        <div class="ai-msg p-4 text-sm max-w-[85%] shadow-md leading-relaxed">
-                            ${aiText}
-                        </div>`;
+                    content.innerHTML += `<div class="ai-msg p-4 text-sm max-w-[85%] shadow-md border border-white/5">${aiText}</div>`;
                 } else {
-                    throw new Error(data.error?.message || "AI từ chối trả lời");
+                    throw new Error(data.error?.message || "AI bận đột xuất rồi!");
                 }
 
             } catch (e) {
                 if (document.getElementById(loadingId)) document.getElementById(loadingId).remove();
                 content.innerHTML += `
                     <div class="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] rounded-xl text-center">
-                        Lỗi: ${e.message} <br> Fen check lại API Key hoặc link Restriction nhé!
+                        Lỗi: ${e.message}
                     </div>`;
             }
-            
             content.scrollTop = content.scrollHeight;
         }
 
-        // Hỗ trợ phím Enter
+        // Enter key
         document.getElementById('ai-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') askAI();
         });
