@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DalatOS - AI Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .typing-dots span {
+            animation: blink 1.4s infinite both;
+            height: 6px; width: 6px; background: #fbbf24;
+            display: inline-block; border-radius: 50%; margin: 0 2px;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%, 100% { opacity: .2; } 20% { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen flex flex-col p-4 font-sans">
+
+    <div class="max-w-2xl mx-auto w-full mb-6">
+        <h1 class="text-2xl font-black italic text-amber-500 tracking-tighter">DALAT OS <span class="text-white">AI LAB</span></h1>
+        <p class="text-[10px] text-slate-500 uppercase tracking-widest">Phòng thí nghiệm hỗ trợ du lịch</p>
+    </div>
+
+    <div class="max-w-2xl mx-auto w-full flex-1 flex flex-col glass rounded-[2.5rem] overflow-hidden shadow-2xl border border-amber-500/20">
+        <div id="chat-content" class="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide text-sm">
+            <div class="bg-slate-800/50 p-4 rounded-2xl rounded-tl-none border border-white/5 max-w-[80%]">
+                Chào fen! Đây là bản test kết nối trực tiếp Gemini. Thử hỏi tui về món ăn hoặc đường xá Đà Lạt đi!
+            </div>
+        </div>
+
+        <div class="p-4 bg-slate-900/50 border-t border-white/5 flex gap-2 items-center">
+            <input type="text" id="ai-input" placeholder="Hỏi gì đó về Đà Lạt..." 
+                class="flex-1 bg-slate-800 border border-slate-700 rounded-2xl px-5 py-3 outline-none focus:border-amber-500 transition-all text-sm">
+            <button onclick="askAI()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-6 py-3 rounded-2xl font-bold transition-all active:scale-95">
+                GỬI
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // CẤU HÌNH TẠI ĐÂY
+        const API_KEY = "AIzaSyDvb0xeF6XTWEZoZcbuOjMNat1ZL5o5Ekw"; 
+        const MODEL_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" + API_KEY;
+
+        // Dữ liệu giả lập (Sau này sẽ lấy từ Sheets của fen)
+        const mockData = [
+            {Tên: "Lẩu gà lá é Tao Đàn", Món: "Lẩu gà lá é, gà nướng", Coords: "11.939, 108.438", Gio: "08:00-22:00"},
+            {Tên: "Bánh căn Lệ", Món: "Bánh căn trứng, bò", Coords: "11.945, 108.441", Gio: "07:00-11:00"},
+            {Tên: "Đèo Mimosa", CanhBao: "Đường xấu, nhiều xe ben, bụi", Coords: "11.912, 108.460"}
+        ];
+
+        async function askAI() {
+            const input = document.getElementById('ai-input');
+            const content = document.getElementById('chat-content');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            // 1. User Message
+            content.innerHTML += `<div class="bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl rounded-tr-none max-w-[80%] self-end ml-auto text-right text-amber-400">${msg}</div>`;
+            input.value = '';
+            content.scrollTop = content.scrollHeight;
+
+            // 2. Loading State
+            const loadingId = "loading-" + Date.now();
+            content.innerHTML += `
+                <div id="${loadingId}" class="bg-slate-800/50 p-4 rounded-2xl rounded-tl-none border border-white/5 max-w-[80%] flex flex-col gap-2 italic text-slate-400">
+                    <span>Đang hỏi thổ địa...</span>
+                    <div class="typing-dots"><span></span><span></span><span></span></div>
+                </div>`;
+            content.scrollTop = content.scrollHeight;
+
+            // 3. Prompt Engineering
+            const prompt = `
+                Bạn là "Thổ địa Dalat OS". 
+                Dữ liệu hỗ trợ: ${JSON.stringify(mockData)}
+                Nhiệm vụ: Trả lời ngắn gọn (<100 chữ), phong cách bụi bặm, dân phượt. 
+                Nếu hỏi đường tới chỗ nào có điểm đen (như Mimosa), phải cảnh báo ngay.
+                Câu hỏi của user: "${msg}"
+            `;
+
+            try {
+                const response = await fetch(MODEL_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+
+                if (data.candidates && data.candidates[0]) {
+                    const aiResponse = data.candidates[0].content.parts[0].text;
+                    content.innerHTML += `<div class="bg-slate-800/50 p-4 rounded-2xl rounded-tl-none border border-white/5 max-w-[80%] shadow-lg">${aiResponse}</div>`;
+                } else {
+                    throw new Error(data.error?.message || "Lỗi không xác định");
+                }
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                content.innerHTML += `<div class="bg-rose-500/10 border border-rose-500/20 p-4 rounded-2xl text-rose-400 text-xs text-center">Lỗi: ${error.message}</div>`;
+            }
+            content.scrollTop = content.scrollHeight;
+        }
+
+        // Enter key support
+        document.getElementById('ai-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') askAI(); });
+    </script>
+</body>
+</html>
