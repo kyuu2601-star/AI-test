@@ -3,80 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DalatOS AI - Secure Mode</title>
+    <title>DalatOS AI - Full Data Version</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root { --primary: #6f42c1; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        .header { background: var(--primary); color: white; padding: 15px; text-align: center; font-weight: bold; }
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 80%; padding: 12px; border-radius: 15px; font-size: 15px; line-height: 1.5; }
-        .user { align-self: flex-end; background: var(--primary); color: white; }
-        .ai { align-self: flex-start; background: white; border: 1px solid #ddd; }
-        .input-area { background: white; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
-        input { flex: 1; padding: 10px 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; }
-        button { background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 25px; cursor: pointer; }
-        .key-btn { background: #6c757d; font-size: 10px; padding: 5px 10px; position: absolute; top: 15px; right: 10px; }
+        :root { --primary: #007bff; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        .header { background: #1a1a1a; color: #ffce00; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.6; position: relative; }
+        .user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .ai { align-self: flex-start; background: white; border: 1px solid #e0e0e0; border-bottom-left-radius: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .input-area { background: white; padding: 20px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
+        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
+        button { background: #ffce00; color: #1a1a1a; border: none; padding: 0 25px; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        .info-card { margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc; font-size: 13px; color: #444; }
+        .map-link { color: #007bff; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="header">🌲 DALATOS AI - SECURE 🌲</div>
-<button class="key-btn" onclick="resetKey()">Đổi API Key</button>
-
-<div id="chat-box"></div>
+<div class="header">🌟 DALATOS AI - ĐÀ LẠT TRONG TẦM TAY 🌟</div>
+<div id="chat-box">
+    <div class="msg ai">Chào fen! Tui đã nạp xong <b>cẩm nang ăn chơi Đà Lạt</b> của fen rồi. Fen muốn tìm quán nào hoặc món gì (bánh căn, kem bơ, tiệm nướng...) thì hỏi tui nha!</div>
+</div>
 
 <div class="input-area">
-    <input type="text" id="promptInput" placeholder="Nhập tin nhắn...">
+    <input type="text" id="userInput" placeholder="Hỏi về quán ăn, món ngon..." onkeypress="if(event.key==='Enter') handleChat()">
     <button onclick="handleChat()">Gửi</button>
 </div>
 
 <script>
-    // 1. Kiểm tra Key trong máy người dùng (LocalStorage)
-    let API_KEY = localStorage.getItem('GEMINI_KEY');
+    let dalatData = [];
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTnXggiUJriOBPHz05pt01aIq_qaCDeQAcWpyYTG6zx1XI9WzfVDTbb8rPwYPf2w8uHxeDpx3Tznx53/pub?gid=615358788&single=true&output=csv";
 
-    function checkKey() {
-        if (!API_KEY || API_KEY === "null") {
-            API_KEY = prompt("Vui lòng dán API Key của fen vào đây (Chỉ lưu tại máy fen):");
-            if (API_KEY) {
-                localStorage.setItem('GEMINI_KEY', API_KEY);
-            }
+    // Tải dữ liệu từ Sheet
+    Papa.parse(CSV_URL, {
+        download: true,
+        header: true,
+        complete: function(results) {
+            dalatData = results.data;
+            console.log("Đã nạp dữ liệu thành công!");
         }
-    }
+    });
 
-    function resetKey() {
-        localStorage.removeItem('GEMINI_KEY');
-        location.reload();
-    }
-
-    async function handleChat() {
-        checkKey(); // Đảm bảo có key trước khi gửi
-        if (!API_KEY) return;
-
-        const input = document.getElementById('promptInput');
+    function handleChat() {
+        const input = document.getElementById('userInput');
         const text = input.value.trim();
         if (!text) return;
 
         addMessage('user', text);
         input.value = '';
 
-        try {
-            const MODEL = "gemini-1.5-flash";
-            const URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
+        setTimeout(() => {
+            const results = searchDalat(text.toLowerCase());
+            if (results.length > 0) {
+                let reply = `Tui tìm thấy ${results.length} chỗ đúng ý fen nè:`;
+                results.forEach(item => {
+                    reply += `\n\n📍 **${item['Tên']}** (${item['Category']})\n` +
+                             `🍴 Món gợi ý: ${item['Recommend']}\n` +
+                             `💰 Giá: ${item['Giá/món']}\n` +
+                             `⏰ Mở cửa: ${item['Giờ mở cửa 1']}\n` +
+                             `🔗 Link Maps: ${item['Link']}`;
+                });
+                addMessage('ai', reply);
+            } else {
+                addMessage('ai', "Hic, món này hoặc quán này tui chưa kịp cập nhật vào Sheet. Fen thử tìm từ khóa khác như 'Bánh căn' hay 'Tiệm nướng' xem?");
+            }
+        }, 600);
+    }
 
-            const response = await fetch(URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
-            });
-
-            const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
-
-            addMessage('ai', data.candidates[0].content.parts[0].text);
-        } catch (err) {
-            addMessage('ai', "❌ Lỗi: " + err.message);
-            if (err.message.includes("API key not valid")) resetKey();
-        }
+    function searchDalat(keyword) {
+        // Tìm kiếm thông minh: kiểm tra cả tên quán, khu vực và loại hình (Category)
+        return dalatData.filter(item => 
+            (item['Tên'] && item['Tên'].toLowerCase().includes(keyword)) ||
+            (item['Category'] && item['Category'].toLowerCase().includes(keyword)) ||
+            (item['Recommend'] && item['Recommend'].toLowerCase().includes(keyword))
+        ).slice(0, 3); // Trả về tối đa 3 kết quả để tránh bị dài quá
     }
 
     function addMessage(type, content) {
@@ -86,8 +88,6 @@
         document.getElementById('chat-box').appendChild(div);
         document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
     }
-
-    checkKey(); // Hỏi key ngay khi mở trang
 </script>
 </body>
 </html>
