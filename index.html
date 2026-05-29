@@ -3,70 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DalatOS - Thổ Địa Đường Phố</title>
+    <title>DalatOS - Thổ Địa Bản Địa</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        :root { --primary-color: #2e7d32; --accent-color: #fbc02d; --bg-color: #f4f7f6; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg-color); margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        
-        /* Header */
-        .header { background: #1b5e20; color: white; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .header h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; }
-        .header p { margin: 5px 0 0; font-size: 0.8rem; opacity: 0.8; }
-
-        /* Khung chat */
+        :root { --primary: #1b5e20; --accent: #fbc02d; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        .header { background: var(--primary); color: white; padding: 15px; text-align: center; }
         #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 85%; padding: 12px 16px; border-radius: 15px; line-height: 1.6; font-size: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative; }
-        .user { align-self: flex-end; background-color: var(--primary-color); color: white; border-bottom-right-radius: 2px; }
-        .ai { align-self: flex-start; background-color: white; color: #333; border: 1px solid #e0e0e0; border-bottom-left-radius: 2px; }
-        
-        /* Hiển thị ảnh và link */
-        .msg img { max-width: 100%; border-radius: 10px; margin: 10px 0; display: block; }
-        .msg a { color: #1565c0; font-weight: bold; text-decoration: underline; }
-        .msg p { margin: 8px 0; }
-
-        /* Ô nhập liệu */
-        .input-container { background: white; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
-        input { flex: 1; padding: 12px 20px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 16px; }
-        button { background-color: var(--accent-color); border: none; padding: 0 25px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #f9a825; }
-
-        #status { font-size: 11px; text-align: center; color: #777; padding: 5px; }
+        .msg { max-width: 85%; padding: 12px 18px; border-radius: 15px; line-height: 1.6; font-size: 15px; }
+        .user { align-self: flex-end; background: #007bff; color: white; border-bottom-right-radius: 2px; }
+        .ai { align-self: flex-start; background: white; border: 1px solid #ddd; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .msg img { max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #eee; }
+        .msg a { color: #d32f2f; font-weight: bold; text-decoration: none; }
+        .input-area { background: white; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
+        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; }
+        button { background: var(--accent); border: none; padding: 0 20px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+        #status { font-size: 10px; text-align: center; color: #999; padding: 5px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>🌲 DALATOS AI</h1>
-    <p>Thổ địa Đà Lạt - Hỏi gì đáp nấy</p>
-</div>
-
+<div class="header">🌲 DALATOS - THỔ ĐỊA ĐÀ LẠT</div>
 <div id="chat-box">
-    <div class="msg ai">Chào fen! Tui là Thổ địa Đà Lạt đây. Fen muốn tìm chỗ ăn ngon, quán cafe chill hay cần tui lên lịch trình đi chơi mà không lo lạc đường thì cứ nhắn tui nha! 😎</div>
+    <div class="msg ai">Chào fen! Tui là Thổ Địa DalatOS. Fen đang ở đâu hoặc muốn tìm quán gì cứ hú tui, tui soi Maps và cẩm nang rồi chỉ chỗ "ngon - bổ - rẻ" cho nha!</div>
 </div>
+<div id="status">Đang nạp dữ liệu cẩm nang...</div>
 
-<div id="status">Đang nạp cẩm nang du lịch...</div>
-
-<div class="input-container">
-    <input type="text" id="userInput" placeholder="Ví dụ: Tìm quán gà nướng đường dễ đi..." onkeypress="if(event.key==='Enter') handleChat()">
+<div class="input-area">
+    <input type="text" id="userInput" placeholder="Hỏi đường, hỏi quán, hỏi review..." onkeypress="if(event.key==='Enter') handleChat()">
     <button onclick="handleChat()">Gửi</button>
 </div>
 
 <script>
     let knowledgeBase = "";
-    // Link CSV từ Google Sheets của fen
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTnXggiUJriOBPHz05pt01aIq_qaCDeQAcWpyYTG6zx1XI9WzfVDTbb8rPwYPf2w8uHxeDpx3Tznx53/pub?gid=615358788&single=true&output=csv";
 
-    // Tự động nạp dữ liệu khi mở trang
     window.onload = async () => {
         try {
             const res = await fetch(CSV_URL);
             knowledgeBase = await res.text();
-            document.getElementById('status').innerText = "✅ Cẩm nang đã sẵn sàng!";
-            setTimeout(() => document.getElementById('status').style.display = 'none', 3000);
-        } catch (e) {
-            document.getElementById('status').innerText = "❌ Không tải được dữ liệu!";
-        }
+            document.getElementById('status').style.display = 'none';
+        } catch (e) { document.getElementById('status').innerText = "Lỗi nạp dữ liệu!"; }
     };
 
     async function handleChat() {
@@ -77,63 +54,37 @@
         addMessage('user', text);
         input.value = '';
 
-        // PROMPT SIÊU CHI TIẾT CHO AI
-        const systemPrompt = `Bạn là "Thổ Địa DalatOS". Nhiệm vụ của bạn là hỗ trợ khách du lịch (đặc biệt là người không rành công nghệ) tìm địa điểm tại Đà Lạt.
-DỮ LIỆU CỦA BẠN CÓ CÁC CỘT:
-- Cột A: Tên quán.
-- Cột B: Khu vực.
-- Cột C: Category (Ăn/Uống/Chụp hình...).
-- Cột D: Link Google Maps.
-- Cột F: Recommend/Review (Thông tin món ngon, đánh giá của khách).
-- Cột K: Độ khó di chuyển (Dễ/Trung bình/Khó).
-- Cột M: Lưu ý đường vào (Dốc, hẻm nhỏ, đường đất...).
-- Cột N: Link ảnh (Image).
+        const systemPrompt = `Bạn là Thổ Địa DalatOS. Hãy hỗ trợ khách như một người bạn bản địa.
+NHIỆM VỤ CHI TIẾT:
+1. CHECK KHOẢNG CÁCH: Sử dụng tọa độ ở cột E. So sánh điểm khách hỏi với các quán (lệch 0.01 ở tọa độ ~ 1km). Báo khách quán nào gần nhất.
+2. CHỦ ĐỘNG GỢI Ý: Nếu có nhiều quán tương tự (ví dụ cùng là Bánh căn), hãy liệt kê ngắn gọn và HỎI khách thích kiểu gì (ví dụ: "Fen thích quán đông vui trung tâm hay quán yên tĩnh trong hẻm?") để lọc lại.
+3. CẢNH BÁO TẬN TÂM: Check cột K (Độ khó) và M (Lưu ý đường). Nếu đường Khó/Trung bình, phải dặn khách vững tay lái hoặc bắt Grab.
+4. REVIEW THẬT: Tổng hợp từ cột F (Recommend). Nói rõ ưu/nhược điểm quán.
+5. TRÌNH BÀY: Ngắn gọn, gạch đầu dòng. Có Link Maps (Cột D) và Ảnh (Markdown ![ảnh](link) từ cột N).
 
-QUY TẮC TRẢ LỜI:
-1. Kiểm tra cột F để biết quán có món khách cần không và khách trên Maps review thế nào.
-2. Kiểm tra cột K và M để CẢNH BÁO nếu đường khó đi. Nếu khách nói họ lái xe yếu, hãy chỉ chọn quán "Dễ".
-3. Luôn cung cấp Link Maps (Cột D) kèm câu: "Bấm vào đây để xem đường đi nè fen".
-4. Nếu có link ảnh ở cột N, hãy hiển thị ảnh bằng Markdown: ![ảnh quán](link_ảnh).
-5. Nếu khách yêu cầu lộ trình (route), hãy sắp xếp các quán cùng Khu vực (Cột B) đi chung với nhau.
-6. Ngôn ngữ: Thân thiện, bình dân, dùng từ "tui", "fen".
-
-DỮ LIỆU:
+DỮ LIỆU CẨM NĂNG (A:Tên, B:Khu vực, C:Category, D:Link, E:Tọa độ, F:Recommend, K:Di chuyển, M:Đường vào, N:Ảnh):
 ${knowledgeBase}`;
 
-        // THAY LINK WORKER CỦA FEN VÀO ĐÂY
-        const WORKER_URL = "https://ai-test.kyuu2601.workers.dev"; 
+        const WORKER_URL = "https://ai-test.kyuu2601.workers.dev"; // LINK WORKER CỦA FEN
 
         try {
             const response = await fetch(WORKER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: systemPrompt + "\n\nCÂU HỎI CỦA KHÁCH: " + text })
+                body: JSON.stringify({ message: systemPrompt + "\n\nKhách: " + text })
             });
-
             const data = await response.json();
-            const aiMsg = data.candidates[0].content.parts[0].text;
-            addMessage('ai', aiMsg);
-        } catch (err) {
-            addMessage('ai', "Hệ thống bận xíu, fen thử lại nha! Lỗi: " + err.message);
-        }
+            addMessage('ai', data.candidates[0].content.parts[0].text);
+        } catch (err) { addMessage('ai', "Hệ thống bận tí, đợi tui xíu nha fen!"); }
     }
 
     function addMessage(role, content) {
-        const chatBox = document.getElementById('chat-box');
         const div = document.createElement('div');
         div.className = `msg ${role}`;
-        
-        if (role === 'ai') {
-            // Render Markdown để hiện ảnh và link
-            div.innerHTML = marked.parse(content);
-        } else {
-            div.innerText = content;
-        }
-        
-        chatBox.appendChild(div);
-        chatBox.scrollTop = chatBox.scrollHeight;
+        div.innerHTML = role === 'ai' ? marked.parse(content) : content;
+        document.getElementById('chat-box').appendChild(div);
+        document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
     }
 </script>
-
 </body>
 </html>
