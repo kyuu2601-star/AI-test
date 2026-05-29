@@ -31,35 +31,49 @@
 
 <script>
     async function handleChat() {
-        const input = document.getElementById('userInput');
-        const text = input.value.trim();
-        if (!text) return;
+    const input = document.getElementById('userInput');
+    const userMsg = input.value.trim();
+    if (!userMsg || !knowledgeBase) return;
 
-        addMessage('user', text);
-        input.value = '';
+    addMessage('user', userMsg);
+    input.value = '';
 
-        // 🟢 DÁN LINK CLOUDFLARE CỦA FEN VÀO ĐÂY
-        const WORKER_URL = "https://ai-test.kyuu2601.workers.dev"; 
+    // SYSTEM PROMPT: Biến AI thành Thổ Địa
+    const systemInstruction = `
+Bạn là "Thổ Địa DalatOS" - một chuyên gia du lịch bản địa tại Đà Lạt. 
+Nhiệm vụ của bạn là sử dụng dữ liệu CSV dưới đây để tư vấn cho khách du lịch.
 
-        try {
-            const response = await fetch(WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text }) // Gửi tin nhắn qua Worker
-            });
+QUY TẮC TRẢ LỜI:
+1. LUÔN CHECK DỮ LIỆU: Chỉ tư vấn những quán có trong danh sách CSV.
+2. TƯ VẤN DI CHUYỂN: Dựa vào cột 'Di chuyển' và 'Lưu ý đường vào' để cảnh báo khách (ví dụ: tay lái yếu thì không nên đi quán có độ khó 'Khó').
+3. HÌNH ẢNH: Nếu quán có link ở cột 'Image', hãy hiển thị nó dưới dạng: ![ảnh quán](link_ảnh).
+4. LINK MAPS: Luôn cung cấp link Google Maps (cột Link) để khách nhấn vào chỉ đường.
+5. LÊN LỘ TRÌNH: Nếu khách yêu cầu lên route, hãy gom các quán cùng 'Khu vực' lại với nhau để khách đi cho tiện.
+6. PHONG CÁCH: Thân thiện, nhiệt tình, rành mạch, dùng từ ngữ địa phương như "fen", "đã lắm", "chill"...
 
-            const data = await response.json();
-            
-            if (data.error) throw new Error(data.error);
+DỮ LIỆU CẨM NANG:
+${knowledgeBase}
+`;
 
-            // Bốc câu trả lời từ cấu trúc của Gemini
-            const aiResponse = data.candidates[0].content.parts[0].text;
-            addMessage('ai', aiResponse);
-        } catch (err) {
-            addMessage('ai', "❌ Lỗi: " + JSON.stringify(err));
-            console.error(err);
-        }
+    const fullPrompt = `${systemInstruction}\n\nCÂU HỎI CỦA KHÁCH: "${userMsg}"`;
+
+    const WORKER_URL = "https://ai-test.kyuu2601.workers.dev"; 
+
+    try {
+        const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: fullPrompt }) 
+        });
+        const data = await response.json();
+        const aiResponse = data.candidates[0].content.parts[0].text;
+        
+        // Dùng hàm để hiển thị Markdown (để hiện được ảnh và link)
+        addMessage('ai', aiResponse);
+    } catch (err) {
+        addMessage('ai', "❌ Lỗi: " + err.message);
     }
+}
 
     function addMessage(type, content) {
         const div = document.createElement('div');
