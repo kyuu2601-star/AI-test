@@ -33,10 +33,12 @@ async function handleChat() {
     `);
 
     try {
-        // 🎯 LẤY GPS TỪ APP RADAR (Móc biến userPos từ index.html)
+        // 🎯 LẤY GPS AN TOÀN (Không gây lỗi nếu thiếu userPos)
         let gpsInfo = "";
-        if (typeof userPos !== "undefined" && userPos !== null) {
+        if (typeof userPos !== "undefined" && userPos !== null && userPos.lat && userPos.lon) {
             gpsInfo = `\n[VỊ TRÍ HIỆN TẠI CỦA KHÁCH]: Latitude ${userPos.lat}, Longitude ${userPos.lon}. Hãy dùng tọa độ này để tính khoảng cách và chỉ đường chính xác.`;
+        } else {
+            gpsInfo = `\n[HỆ THỐNG]: Hiện chưa lấy được GPS thực tế, hãy hỏi khách đang ở đâu nếu cần tính khoảng cách.`;
         }
 
         const response = await fetch(CONFIG.WORKER_URL, {
