@@ -32,12 +32,13 @@ async function handleChat() {
         const response = await fetch(CONFIG.WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: CONFIG.SYSTEM_PROMPT + "\n\n${knowledgeBase}\n\nKhách: " + text })
+            body: JSON.stringify({
+                message: CONFIG.SYSTEM_PROMPT(knowledgeBase) + "\n\nKhách: " + text
+            })
         });
 
         const data = await response.json();
         const aiMsg = data.candidates[0].content.parts[0].text;
-
         const loadingElement = document.getElementById(loadingId);
         if (loadingElement) {
             loadingElement.closest('.msg').innerHTML = marked.parse(aiMsg);
