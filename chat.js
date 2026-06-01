@@ -33,15 +33,24 @@ async function handleChat() {
     `);
 
     try {
+        // 🎯 LẤY GPS TỪ APP RADAR (Móc biến userPos từ index.html)
+        let gpsInfo = "";
+        if (typeof userPos !== "undefined" && userPos !== null) {
+            gpsInfo = `\n[VỊ TRÍ HIỆN TẠI CỦA KHÁCH]: Latitude ${userPos.lat}, Longitude ${userPos.lon}. Hãy dùng tọa độ này để tính khoảng cách và chỉ đường chính xác.`;
+        }
+
         const response = await fetch(CONFIG.WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // ✅ Gọi đúng function, knowledgeBase inject vào trong prompt
-            body: JSON.stringify({ message: CONFIG.SYSTEM_PROMPT(knowledgeBase) + "\n\nKhách: " + text })
+            // ✅ Inject knowledgeBase và gpsInfo vào chung Prompt gửi đi
+            body: JSON.stringify({ 
+                message: CONFIG.SYSTEM_PROMPT(knowledgeBase) + gpsInfo + "\n\nKhách: " + text 
+            })
         });
 
         const data = await response.json();
         const aiMsg = data.candidates[0].content.parts[0].text;
+        
         const loadingElement = document.getElementById(loadingId);
         if (loadingElement) {
             loadingElement.closest('.msg').innerHTML = marked.parse(aiMsg);
@@ -50,12 +59,16 @@ async function handleChat() {
     } catch (err) {
         console.error(err);
         const loadingElement = document.getElementById(loadingId);
-        if (loadingElement) loadingElement.closest('.msg').innerText = "Lỗi kết nối rồi fen!";
+        if (loadingElement) {
+            loadingElement.closest('.msg').innerText = "Lỗi kết nối rồi fen! Thử lại nha.";
+        }
     }
 }
 
 function addMessage(role, content) {
     const chatBox = document.getElementById('chat-box');
+    if (!chatBox) return; // Tránh lỗi nếu widget chưa load kịp
+    
     const div = document.createElement('div');
     div.className = `msg ${role}`;
     div.innerHTML = (role === 'ai' && !content.includes('typing')) ? marked.parse(content) : content;
@@ -63,14 +76,15 @@ function addMessage(role, content) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// --- LOGIC LƯU TRỮ ---
+// --- LOGIC LƯU TRỮ (24H) ---
 function saveMessage(role, content) {
     let history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY)) || { timestamp: Date.now(), messages: [] };
 
-    // Nếu quá 24h thì reset
+    // Nếu quá 24h kể từ tin đầu tiên thì reset sạch
     if (Date.now() - history.timestamp > EXPIRY_TIME) {
         history = { timestamp: Date.now(), messages: [] };
     }
+    
     history.messages.push({ role, content });
     localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(history));
 }
@@ -81,13 +95,15 @@ function loadChatHistory() {
         addMessage('ai', "Chào fen! Tui là Thổ Địa đây. Fen muốn tìm quán gì hay lên lịch trình đi đâu không?");
         return;
     }
-    // Kiểm tra hết hạn 24h
+    
+    // Kiểm tra hết hạn 24h khi load lại trang
     if (Date.now() - history.timestamp > EXPIRY_TIME) {
         localStorage.removeItem(CHAT_STORAGE_KEY);
         addMessage('ai', "Chào fen! Tui là Thổ Địa đây. Fen muốn tìm quán gì hay lên lịch trình đi đâu không?");
         return;
     }
-    // Hiển thị lại các tin nhắn cũ
+    
+    // Hiển thị lại toàn bộ các tin nhắn đã lưu
     history.messages.forEach(msg => {
         addMessage(msg.role, msg.content);
     });
