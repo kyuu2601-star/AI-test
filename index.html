@@ -3,27 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DalatOS - Thổ Địa Bản Địa</title>
-    <link rel="stylesheet" href="style.css">
+    <title>DalatOS - Test Floating Bot</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="header">
-    <h1>🌲 DALATOS AI</h1>
-    <p>Thổ Địa Chuyên Lên Lịch Trình</p>
-</div>
+    <div style="padding: 50px; text-align: center; color: #64748b;">
+        <h1>DalatOS Chat Widget</h1>
+        <p>Giao diện đã được tách thành Component chuyên nghiệp.</p>
+    </div>
 
-<div id="chat-box"></div>
+    <script src="config.js"></script>
+    <script src="widget.js"></script>
+    <script src="chat.js"></script>
 
-<div id="status">Đang nạp cẩm nang...</div>
-
-<div class="input-container">
-    <input type="text" id="userInput" placeholder="Hỏi quán, hỏi đường, hỏi lịch trình..." onkeypress="if(event.key==='Enter') handleChat()">
-    <button onclick="handleChat()">Gửi</button>
-</div>
-
-<script src="config.js"></script>
-<script src="chat.js"></script>
 </body>
 </html>
