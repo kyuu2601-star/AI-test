@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Component Map DalatOS</title>
+    <title>Test Chỉ Đường Thực Tế - DalatOS</title>
 
-    <link rel="stylesheet" href="https://raw.githack.com/kyuu2601-star/AI-test/main/map/map.css?v=1.0.1" />
+    <link rel="stylesheet" href="https://raw.githack.com/kyuu2601-star/AI-test/main/map/map.css?v=1.0.4" />
 
     <style>
-        /* CSS trang trí card test của fen */
         body {
             background-color: #020617;
             font-family: system-ui, -apple-system, sans-serif;
@@ -26,12 +25,18 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            width: 250px;
+            width: 280px;
         }
         .card-test h2 {
-            margin: 0 0 16px 0;
+            margin: 0 0 8px 0;
             font-size: 20px;
             color: #f59e0b;
+        }
+        .card-test p {
+            margin: 0 0 16px 0;
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.4;
         }
         .btn-chi-duong {
             display: inline-block;
@@ -56,47 +61,68 @@
 <body>
 
     <div class="card-test">
-        <h2>Nhà Hàng</h2>
+        <h2>Bánh Căn Tăng Bạt Hổ</h2>
+        <p>📍 Điểm đến (Đà Lạt):<br>11.9422, 108.4322</p>
+        <p style="font-size: 11px; color: #10b981;">🏁 Điểm đi mặc định (Phú Nhuận):<br>10.7987297, 106.6867907</p>
+        
         <a href="https://www.google.com/maps/place/Sushi+Haru/@10.7989157,106.6859115,18.67z/data=!4m6!3m5!1s0x317528d060403c3f:0xd2a69ffaed12fbb!8m2!3d10.79873!4d106.6867887!16s%2Fg%2F11dxpfzszr?entry=ttu&g_ep=EgoyMDI2MDUzMS4wIKXMDSoASAFQAw%3D%3D" 
            id="btn-test-map" 
-           data-lat="11.9406" 
-           data-lon="108.4373" 
+           data-lat="11.9422" 
+           data-lon="108.4322" 
            class="btn-chi-duong">
-            Chỉ đường
+            Chỉ đường In-App
         </a>
     </div>
 
-    <script src="https://raw.githack.com/kyuu2601-star/AI-test/main/map/widget.js?v=1.0.1"></script>
+    <script src="https://raw.githack.com/kyuu2601-star/AI-test/main/map/widget.js?v=1.0.4"></script>
 
     <script>
-        // Chờ cho trang web và file widget.js load xong hoàn toàn
         window.addEventListener('DOMContentLoaded', () => {
-            
             const btnChiDuong = document.getElementById('btn-test-map');
             
             if (btnChiDuong) {
                 btnChiDuong.addEventListener('click', function(e) {
-                    // 🔥 ĐÒN CHÍ MẠNG: Chặn đứng hành vi văng sang app Google Maps bên ngoài
-                    e.preventDefault(); 
-                    
-                    // Bốc tọa độ và tên từ các thuộc tính của thẻ HTML
-                    const lat = this.getAttribute('data-lat');
-                    const lon = this.getAttribute('data-lon');
+                    e.preventDefault(); // Thắng xích cản Google Maps bung ra ngoài tab mới
+
+                    const latQuan = this.getAttribute('data-lat');
+                    const lonQuan = this.getAttribute('data-lon');
                     const name = this.parentElement.querySelector('h2').innerText;
 
-                    console.log(`🎯 Đã chặn Google Maps thành công! Đang gọi Iframe Google Maps cho: ${name}...`);
+                    // Tọa độ Phú Nhuận fen vừa đưa
+                    const latPhuNhuan = 10.798729702621845;
+                    const lonPhuNhuan = 106.68679072704482;
 
-                    // 3. Gọi lệnh mở bản đồ từ Component Mới (DalatOS_InAppMap) trong file widget.js
-                    if (window.DalatOS_InAppMap && typeof window.DalatOS_InAppMap.open === 'function') {
-                        window.DalatOS_InAppMap.open(lat, lon, name);
+                    console.log("🛰️ Hệ thống bắt đầu xử lý định tuyến đường đi...");
+
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                // Nếu lấy được GPS thực tế của fen (ví dụ fen đang ở đúng chỗ Phú Nhuận đó luôn)
+                                const latKhach = position.coords.latitude;
+                                const lonKhach = position.coords.longitude;
+                                
+                                console.log(`📍 Dùng GPS thực tế: ${latKhach}, ${lonKhach}`);
+                                if (window.DalatOS_InAppMap) {
+                                    window.DalatOS_InAppMap.open(latKhach, lonKhach, latQuan, lonQuan, name);
+                                }
+                            },
+                            (error) => {
+                                // 🔥 CỨU VÃN CHÍ MẠNG: Nếu trình duyệt chặn GPS, nạp luôn tọa độ Phú Nhuận fen đưa để test
+                                console.warn("⚠️ Không lấy được GPS thực tế, tự động dùng tọa độ Phú Nhuận fen cấp để tạo lộ trình.");
+                                if (window.DalatOS_InAppMap) {
+                                    window.DalatOS_InAppMap.open(latPhuNhuan, lonPhuNhuan, latQuan, lonQuan, name);
+                                }
+                            },
+                            { enableHighAccuracy: true, timeout: 4000 }
+                        );
                     } else {
-                        alert("❌ Lỗi: Không tìm thấy hàm DalatOS_InAppMap.open trong widget.js mới. Fen nhớ commit code mới lên Github nha!");
+                        // Trình duyệt cũ không hỗ trợ GPS -> Kéo thẳng từ Phú Nhuận đi luôn
+                        if (window.DalatOS_InAppMap) {
+                            window.DalatOS_InAppMap.open(latPhuNhuan, lonPhuNhuan, latQuan, lonQuan, name);
+                        }
                     }
                 });
-            } else {
-                console.log("❌ Không tìm thấy nút bấm mang ID 'btn-test-map' để gán lệnh.");
             }
-            
         });
     </script>
 </body>
