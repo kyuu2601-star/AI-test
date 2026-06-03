@@ -30,7 +30,7 @@
             titleBox.innerText = `Đường đến: ${tenQuan}`;
 
             // Tạo link nhúng chính thức của Google Maps dựa trên Tọa độ
-            const embedUrl = `https://maps.google.com/maps?q=${lat},${lon}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+            const embedUrl = `https://maps.google.com/maps?saddr=${latKhach},${lonKhach}&daddr=${latQuan},${lonQuan}&output=embed`;
             
             iframe.src = embedUrl;
 
