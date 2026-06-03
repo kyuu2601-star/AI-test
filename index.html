@@ -67,18 +67,32 @@
 
     <script src="https://raw.githack.com/kyuu2601-star/AI-test/main/map/widget.js"></script>
 
-    <script>
-        // Lệnh test kích hoạt thủ công (nếu file widget.js của fen cần kích hoạt qua hàm toàn cục)
-        // Khi fen bấm nút "Chỉ đường", luồng code trong widget.js của fen sẽ chặn cái link href lại
-        // và kích hoạt mở popup map lên ngay trên màn hình này.
+<script>
+    // 1. Chờ cho trang web và file widget.js load xong hoàn toàn
+    window.addEventListener('DOMContentLoaded', () => {
         
-        document.getElementById('btn-test-map').addEventListener('click', function(e) {
-            // Nếu file widget.js của fen chưa tự động bắt sự kiện click, 
-            // thì fen có thể gọi hàm mở map trực tiếp ở đây, ví dụ:
-            // e.preventDefault(); // Chặn đổi trang sang link googleusercontent
-            // window.DalatOS_Map.open(11.9406, 108.4373, "Nhà Hàng Test");
-            console.log("Đã bấm nút Chỉ đường với link:", this.href);
-        });
-    </script>
+        const btnChiDuong = document.getElementById('btn-test-map');
+        
+        if (btnChiDuong) {
+            btnChiDuong.addEventListener('click', function(e) {
+                // 🔥 ĐÒN CHÍ MẠNG: Chặn đứng không cho trình duyệt mở link Google Maps ngoài app
+                e.preventDefault(); 
+                
+                console.log("🎯 Đã chặn Google Maps thành công! Đang kích hoạt Popup Leaflet...");
+
+                // 2. Gọi lệnh mở bản đồ từ Component DalatOS_Map của fen
+                // Truyền tọa độ test (Ví dụ trung tâm Đà Lạt: 11.9406, 108.4373) và Tên địa điểm
+                if (window.DalatOS_Map && typeof window.DalatOS_Map.open === 'function') {
+                    window.DalatOS_Map.open(11.9406, 108.4373, "Nhà Hàng Test");
+                } else {
+                    alert("❌ Lỗi: Không tìm thấy hàm DalatOS_Map.open trong file widget.js. Fen kiểm tra lại code file đó nha!");
+                }
+            });
+        } else {
+            console.log("❌ Không tìm thấy nút bấm mang ID 'btn-test-map' để gán lệnh.");
+        }
+        
+    });
+</script>
 </body>
 </html>
