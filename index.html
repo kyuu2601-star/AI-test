@@ -76,54 +76,62 @@
 
     <script src="https://raw.githack.com/kyuu2601-star/AI-test/main/map/widget.js?v=1.0.4"></script>
 
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const btnChiDuong = document.getElementById('btn-test-map');
-            
-            if (btnChiDuong) {
-                btnChiDuong.addEventListener('click', function(e) {
-                    e.preventDefault(); // Thắng xích cản Google Maps bung ra ngoài tab mới
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const btnChiDuong = document.getElementById('btn-test-map');
+        
+        if (btnChiDuong) {
+            btnChiDuong.addEventListener('click', function(e) {
+                e.preventDefault(); // Chặn đứng lệnh văng app ra ngoài tab mới
 
-                    const latQuan = this.getAttribute('data-lat');
-                    const lonQuan = this.getAttribute('data-lon');
-                    const name = this.parentElement.querySelector('h2').innerText;
+                // 1. Bốc tọa độ ĐÍCH ĐẾN (Quán ăn) từ thuộc tính HTML có sẵn
+                const latQuan = this.getAttribute('data-lat');
+                const lonQuan = this.getAttribute('data-lon');
+                const name = this.parentElement.querySelector('h2').innerText;
 
-                    // Tọa độ Phú Nhuận fen vừa đưa
-                    const latPhuNhuan = 10.798729702621845;
-                    const lonPhuNhuan = 106.68679072704482;
+                // Tọa độ Phú Nhuận dự phòng (nếu user chặn GPS)
+                const latPhuNhuan = 10.798729702621845;
+                const lonPhuNhuan = 106.68679072704482;
 
-                    console.log("🛰️ Hệ thống bắt đầu xử lý định tuyến đường đi...");
+                console.log("🛰️ Hệ thống bắt đầu xin quyền GPS để lấy vị trí của fen...");
 
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(
-                            (position) => {
-                                // Nếu lấy được GPS thực tế của fen (ví dụ fen đang ở đúng chỗ Phú Nhuận đó luôn)
-                                const latKhach = position.coords.latitude;
-                                const lonKhach = position.coords.longitude;
-                                
-                                console.log(`📍 Dùng GPS thực tế: ${latKhach}, ${lonKhach}`);
-                                if (window.DalatOS_InAppMap) {
-                                    window.DalatOS_InAppMap.open(latKhach, lonKhach, latQuan, lonQuan, name);
-                                }
-                            },
-                            (error) => {
-                                // 🔥 CỨU VÃN CHÍ MẠNG: Nếu trình duyệt chặn GPS, nạp luôn tọa độ Phú Nhuận fen đưa để test
-                                console.warn("⚠️ Không lấy được GPS thực tế, tự động dùng tọa độ Phú Nhuận fen cấp để tạo lộ trình.");
-                                if (window.DalatOS_InAppMap) {
-                                    window.DalatOS_InAppMap.open(latPhuNhuan, lonPhuNhuan, latQuan, lonQuan, name);
-                                }
-                            },
-                            { enableHighAccuracy: true, timeout: 4000 }
-                        );
-                    } else {
-                        // Trình duyệt cũ không hỗ trợ GPS -> Kéo thẳng từ Phú Nhuận đi luôn
-                        if (window.DalatOS_InAppMap) {
-                            window.DalatOS_InAppMap.open(latPhuNhuan, lonPhuNhuan, latQuan, lonQuan, name);
-                        }
+                // 2. XIN QUYỀN VÀ NẠP GIÁ TRỊ THỰC TẾ VÀO BIẾN
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            // 🔥 ĐÂY RỒI: Khai báo và nạp trực tiếp giá trị từ chip GPS vào biến!
+                            const latKhach = position.coords.latitude;
+                            const lonKhach = position.coords.longitude;
+                            
+                            console.log(`📍 Đã gán tọa độ khách thành công: ${latKhach}, ${lonKhach}`);
+
+                            // 3. Truyền tất cả các biến đã có giá trị sang file widget.js để mở map
+                            if (window.DalatOS_InAppMap) {
+                                window.DalatOS_InAppMap.open(latKhach, lonKhach, latQuan, lonQuan, name);
+                            }
+                        },
+                        (error) => {
+                            console.warn("⚠️ Khách chặn quyền GPS, tự động lấy tọa độ Phú Nhuận làm biến latKhach.");
+                            
+                            // 🔥 CỨU VÃN: Nếu lỗi/chặn GPS, gán luôn tọa độ Phú Nhuận làm latKhach, lonKhach
+                            const latKhach = latPhuNhuan;
+                            const lonKhach = lonPhuNhuan;
+
+                            if (window.DalatOS_InAppMap) {
+                                window.DalatOS_InAppMap.open(latKhach, lonKhach, latQuan, lonQuan, name);
+                            }
+                        },
+                        { enableHighAccuracy: true, timeout: 5000 }
+                    );
+                } else {
+                    // Trình duyệt quá cũ không có GPS -> Dùng luôn tọa độ Phú Nhuận
+                    if (window.DalatOS_InAppMap) {
+                        window.DalatOS_InAppMap.open(latPhuNhuan, lonPhuNhuan, latQuan, lonQuan, name);
                     }
-                });
-            }
-        });
-    </script>
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
