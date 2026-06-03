@@ -1,62 +1,68 @@
 /* Lớp nền mờ phủ toàn màn hình */
-#map-widget-overlay {
+#gg-map-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(2, 6, 23, 0.85) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    z-index: 29999 !important; /* Đè lên trên cả cửa sổ chat widget */
+    background: rgba(2, 6, 23, 0.8) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+    z-index: 39999 !important;
     display: none;
 }
 
-/* Khung chứa bản đồ popup */
-#map-widget-window {
+/* Khung chứa Iframe Google Maps popup */
+#gg-map-window {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.95);
-    width: 90vw;
-    height: 80vh;
+    width: 92vw;
+    height: 85vh;
     max-width: 800px;
-    max-height: 600px;
+    max-height: 650px;
     background: #0f172a;
     border-radius: 24px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    z-index: 30000 !important;
+    z-index: 40000 !important;
     display: none;
     flex-direction: column;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s ease-out;
 }
 
-/* Khi active thì bung hiệu ứng mượt mà */
-#map-widget-window.active {
+#gg-map-window.active {
     transform: translate(-50%, -50%) scale(1);
 }
 
-/* Thanh header của bản đồ */
-.map-header {
+.gg-map-header {
     background: #1e293b;
-    color: #f59e0b;
-    padding: 15px 20px;
+    padding: 14px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-.map-header h3 {
-    margin: 0;
+.gg-map-header span.title {
+    color: #f59e0b;
     font-size: 14px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+}
+.gg-map-header span.close-btn {
+    cursor: pointer;
+    font-size: 28px;
+    line-height: 1;
+    color: #94a3b8;
+}
+.gg-map-header span.close-btn:hover {
+    color: #f1f5f9;
 }
 
-/* Vùng hiển thị bản đồ Leaflet thực tế */
-#leaflet-render-box {
+#gg-map-frame {
     flex: 1;
     width: 100%;
     height: 100%;
+    border: none;
     background: #020617;
 }
