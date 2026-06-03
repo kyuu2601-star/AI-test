@@ -3,20 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DalatOS - Test Floating Bot</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <title>Test Component Map DalatOS</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="https://raw.githack.com/kyuu2601-star/AI-test/main/map/map.css" />
+
+    <style>
+        /* CSS trang trí nhẹ cho cái card test của fen */
+        body {
+            background-color: #020617;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #ffffff;
+        }
+        .card-test {
+            background: #0f172a;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            width: 250px;
+        }
+        .card-test h2 {
+            margin: 0 0 16px 0;
+            font-size: 20px;
+            color: #f59e0b;
+        }
+        .btn-chi-duong {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .btn-chi-duong:hover {
+            background: #1d4ed8;
+        }
+    </style>
 </head>
 <body>
 
-    <div style="padding: 50px; text-align: center; color: #64748b;">
-        <h1>DalatOS Chat Widget</h1>
-        <p>Giao diện đã được tách thành Component chuyên nghiệp.</p>
+    <div class="card-test">
+        <h2>Nhà Hàng</h2>
+        <a href="https://www.google.com/maps/place/Sushi+Haru/@10.7989157,106.6859115,18.67z/data=!4m6!3m5!1s0x317528d060403c3f:0xd2a69ffaed12fbb!8m2!3d10.79873!4d106.6867887!16s%2Fg%2F11dxpfzszr?entry=ttu&g_ep=EgoyMDI2MDUzMS4wIKXMDSoASAFQAw%3D%3D" id="btn-test-map" class="btn-chi-duong">
+            Chỉ đường
+        </a>
     </div>
 
-    <script src="config.js"></script>
-    <script src="widget.js"></script>
-    <script src="chat.js"></script>
+    <script src="https://raw.githack.com/kyuu2601-star/AI-test/main/map/widget.js"></script>
 
+    <script>
+        // Lệnh test kích hoạt thủ công (nếu file widget.js của fen cần kích hoạt qua hàm toàn cục)
+        // Khi fen bấm nút "Chỉ đường", luồng code trong widget.js của fen sẽ chặn cái link href lại
+        // và kích hoạt mở popup map lên ngay trên màn hình này.
+        
+        document.getElementById('btn-test-map').addEventListener('click', function(e) {
+            // Nếu file widget.js của fen chưa tự động bắt sự kiện click, 
+            // thì fen có thể gọi hàm mở map trực tiếp ở đây, ví dụ:
+            // e.preventDefault(); // Chặn đổi trang sang link googleusercontent
+            // window.DalatOS_Map.open(11.9406, 108.4373, "Nhà Hàng Test");
+            console.log("Đã bấm nút Chỉ đường với link:", this.href);
+        });
+    </script>
 </body>
 </html>
