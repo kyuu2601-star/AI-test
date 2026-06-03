@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Component Map DalatOS</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <link rel="stylesheet" href="https://raw.githack.com/kyuu2601-star/AI-test/main/map/map.css" />
 
     <style>
-        /* CSS trang trí nhẹ cho cái card test của fen */
+        /* CSS trang trí card test của fen */
         body {
             background-color: #020617;
             font-family: system-ui, -apple-system, sans-serif;
@@ -60,39 +57,47 @@
 
     <div class="card-test">
         <h2>Nhà Hàng</h2>
-        <a href="https://www.google.com/maps/place/Sushi+Haru/@10.7989157,106.6859115,18.67z/data=!4m6!3m5!1s0x317528d060403c3f:0xd2a69ffaed12fbb!8m2!3d10.79873!4d106.6867887!16s%2Fg%2F11dxpfzszr?entry=ttu&g_ep=EgoyMDI2MDUzMS4wIKXMDSoASAFQAw%3D%3D" id="btn-test-map" class="btn-chi-duong">
+        <a href="https://www.google.com/maps/place/Sushi+Haru/@10.7989157,106.6859115,18.67z/data=!4m6!3m5!1s0x317528d060403c3f:0xd2a69ffaed12fbb!8m2!3d10.79873!4d106.6867887!16s%2Fg%2F11dxpfzszr?entry=ttu&g_ep=EgoyMDI2MDUzMS4wIKXMDSoASAFQAw%3D%3D" 
+           id="btn-test-map" 
+           data-lat="11.9406" 
+           data-lon="108.4373" 
+           class="btn-chi-duong">
             Chỉ đường
         </a>
     </div>
 
     <script src="https://raw.githack.com/kyuu2601-star/AI-test/main/map/widget.js"></script>
 
-<script>
-    // 1. Chờ cho trang web và file widget.js load xong hoàn toàn
-    window.addEventListener('DOMContentLoaded', () => {
-        
-        const btnChiDuong = document.getElementById('btn-test-map');
-        
-        if (btnChiDuong) {
-            btnChiDuong.addEventListener('click', function(e) {
-                // 🔥 ĐÒN CHÍ MẠNG: Chặn đứng không cho trình duyệt mở link Google Maps ngoài app
-                e.preventDefault(); 
-                
-                console.log("🎯 Đã chặn Google Maps thành công! Đang kích hoạt Popup Leaflet...");
+    <script>
+        // Chờ cho trang web và file widget.js load xong hoàn toàn
+        window.addEventListener('DOMContentLoaded', () => {
+            
+            const btnChiDuong = document.getElementById('btn-test-map');
+            
+            if (btnChiDuong) {
+                btnChiDuong.addEventListener('click', function(e) {
+                    // 🔥 ĐÒN CHÍ MẠNG: Chặn đứng hành vi văng sang app Google Maps bên ngoài
+                    e.preventDefault(); 
+                    
+                    // Bốc tọa độ và tên từ các thuộc tính của thẻ HTML
+                    const lat = this.getAttribute('data-lat');
+                    const lon = this.getAttribute('data-lon');
+                    const name = this.parentElement.querySelector('h2').innerText;
 
-                // 2. Gọi lệnh mở bản đồ từ Component DalatOS_Map của fen
-                // Truyền tọa độ test (Ví dụ trung tâm Đà Lạt: 11.9406, 108.4373) và Tên địa điểm
-                if (window.DalatOS_Map && typeof window.DalatOS_Map.open === 'function') {
-                    window.DalatOS_Map.open(11.9406, 108.4373, "Nhà Hàng Test");
-                } else {
-                    alert("❌ Lỗi: Không tìm thấy hàm DalatOS_Map.open trong file widget.js. Fen kiểm tra lại code file đó nha!");
-                }
-            });
-        } else {
-            console.log("❌ Không tìm thấy nút bấm mang ID 'btn-test-map' để gán lệnh.");
-        }
-        
-    });
-</script>
+                    console.log(`🎯 Đã chặn Google Maps thành công! Đang gọi Iframe Google Maps cho: ${name}...`);
+
+                    // 3. Gọi lệnh mở bản đồ từ Component Mới (DalatOS_InAppMap) trong file widget.js
+                    if (window.DalatOS_InAppMap && typeof window.DalatOS_InAppMap.open === 'function') {
+                        window.DalatOS_InAppMap.open(lat, lon, name);
+                    } else {
+                        alert("❌ Lỗi: Không tìm thấy hàm DalatOS_InAppMap.open trong widget.js mới. Fen nhớ commit code mới lên Github nha!");
+                    }
+                });
+            } else {
+                console.log("❌ Không tìm thấy nút bấm mang ID 'btn-test-map' để gán lệnh.");
+            }
+            
+        });
+    </script>
 </body>
 </html>
