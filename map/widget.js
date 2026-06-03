@@ -21,22 +21,33 @@
 
     // 2. ĐỔI TÊN HÀM TOÀN CỤC ĐỂ INDEX GỌI (Vẫn nằm trong window để index móc ra xài)
     window.DalatOS_InAppMap = {
-        open: function(lat, lon, tenQuan) {
-            if (!lat || !lon) {
+open: function(latKhach, lonKhach, latQuan, lonQuan, tenQuan) {
+            if (!latQuan || !lonQuan) {
                 alert("⚠️ Chỗ này chưa cập nhật tọa độ fen ơi!");
                 return;
             }
 
+            // Đổi tiêu đề popup cho chuyên nghiệp
             titleBox.innerText = `Đường đến: ${tenQuan}`;
 
-            // Tạo link nhúng chính thức của Google Maps dựa trên Tọa độ
-            const embedUrl = `https://www.google.com/maps/embed/v1/directions?key=AIzaSyYourKeyHere&origin=${latKhach},${lonKhach}&destination=${latQuan},${lonQuan}&mode=driving`;
+            // 🔥 ĐÂY LÀ ĐOẠN LINK DIRECTION CHUẨN ĐÃ FIX CÚ PHÁP
+            // Dùng dấu backtick ` bọc ngoài, và cấu pháp ${biến} chuẩn chỉnh của JS
+            const embedUrl = `https://www.google.com/maps/embed/v1/directions?key=YOUR_API_KEY&origin=${latKhach},${lonKhach}&destination=${latQuan},${lonQuan}&mode=driving`;
             
+            // 🚨 MẸO NẾU FEN CHƯA CÓ API KEY (Xài link thô này để không bị lỗi màn hình trắng):
+            // const embedUrl = `https://maps.google.com/maps?saddr=${latKhach},${lonKhach}&daddr=${latQuan},${lonQuan}&output=embed`;
+
+            // Nạp link chuẩn vào iframe
             iframe.src = embedUrl;
 
+            // Bật hiệu ứng hiển thị Popup
             overlay.style.display = 'block';
             windowMap.style.display = 'flex';
-            setTimeout(() => windowMap.classList.add('active'), 10);
+            
+            // Thêm class active để tạo hiệu ứng bung lên mượt mà
+            setTimeout(() => {
+                windowMap.classList.add('active');
+            }, 10);
         },
 
         close: function() {
