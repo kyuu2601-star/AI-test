@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dalat Travel OS - Chat Box Sandbox</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <link rel="stylesheet" href="style.css">
 
@@ -33,8 +30,7 @@
                 <span class="text-xs font-black uppercase tracking-widest text-slate-300">Thổ Địa Chát Chít Sandbox</span>
             </div>
 
-            <div id="chat-box" class="flex-1 p-6 overflow-y-auto flex flex-col">
-                </div>
+            <div id="chat-box" class="flex-1 p-6 overflow-y-auto flex flex-col"></div>
 
             <div class="p-4 bg-slate-900/30 border-t border-white/5 flex gap-3">
                 <input type="text" id="userInput" placeholder="Hỏi thổ địa bất cứ điều gì..." 
@@ -47,23 +43,23 @@
         </div>
     </div>
 
-    <script>
-        // Fake biến vị trí nền để tránh lỗi undefined khi chat.js gọi
-        window.userPos = { lat: 10.7987, lon: 106.6867 }; 
-
-        window.onload = () => {
-            if (typeof initBot === "function") {
-                initBot();
-            }
-        };
-    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
 
     <script src="keywords.js"></script>
     <script src="prompts.js"></script>
-
     <script src="config.js"></script>
-    <script src="widget.js"></script>
     <script src="chat.js"></script>
+
+    <script>
+        // Fake vị trí nền tránh crash biến định vị khách
+        window.userPos = { lat: 10.7987, lon: 106.6867 }; 
+
+        // Đảm bảo bọc bằng sự kiện 'load' toàn cục để nạp xong xuôi RAM rồi mới kích chạy initBot
+        window.addEventListener('load', () => {
+            if (typeof initBot === "function") {
+                initBot();
+            }
+        });
+    </script>
 </body>
 </html>
