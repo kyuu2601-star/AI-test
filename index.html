@@ -3,127 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Chỉ Đường Thực Tế - DalatOS</title>
+    <title>Dalat Travel OS - Chat Box Sandbox</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <link rel="stylesheet" href="map/map.css" />
-
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #020617;
-            font-family: system-ui, -apple-system, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #ffffff;
-        }
-        .card-test {
-            background: #0f172a;
-            padding: 24px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            width: 280px;
-        }
-        .card-test h2 {
-            margin: 0 0 8px 0;
-            font-size: 20px;
-            color: #f59e0b;
-        }
-        .card-test p {
-            margin: 0 0 16px 0;
-            font-size: 13px;
-            color: #94a3b8;
-            line-height: 1.4;
-        }
-        .btn-chi-duong {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: background 0.2s;
-            cursor: pointer;
-            border: none;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .btn-chi-duong:hover {
-            background: #1d4ed8;
-        }
+        body { background: #020617; color: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-panel { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-10 flex items-center justify-center min-h-screen">
 
-    <div class="card-test">
-        <h2>Bánh Căn Tăng Bạt Hổ</h2>
-        <p>📍 Điểm đến (Đà Lạt):<br>11.9422, 108.4322</p>
-        <p style="font-size: 11px; color: #10b981;">🏁 Điểm đi mặc định (Phú Nhuận):<br>10.7987297, 106.6867907</p>
-        
-        <a href="#" 
-           id="btn-test-map" 
-           data-lat="11.9422" 
-           data-lon="108.4322" 
-           class="btn-chi-duong">
-            Chỉ đường In-App
-        </a>
+    <!-- CHỈ GIỮ LẠI GIAO DIỆN KHUNG CHAT BOX -->
+    <div class="max-w-2xl w-full mx-auto space-y-6">
+        <header class="text-center space-y-1">
+            <h1 class="text-3xl font-extrabold text-white tracking-tighter italic uppercase">
+                TRAVEL <span class="text-amber-500 font-light italic">OS</span>
+            </h1>
+            <p class="text-slate-500 text-[10px] uppercase tracking-[0.4em] font-black italic">
+                CHAT BOX ONLY - PROMPT TESTING GROUND
+            </p>
+        </header>
+
+        <!-- Khung chứa Chat Box của fen (Giao diện này do file chat.js hoặc index kiểm soát) -->
+        <div class="glass-panel p-6 rounded-[2.5rem] border border-amber-500/10 shadow-2xl min-h-[300px] flex flex-col justify-center items-center">
+            <p class="text-xs text-slate-400 italic">Môi trường thử nghiệm Chat đã sẵn sàng...</p>
+        </div>
     </div>
 
-    <script src="map/widget.js"></script>
-
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const btnChiDuong = document.getElementById('btn-test-map');
-            
-            if (btnChiDuong) {
-                btnChiDuong.addEventListener('click', function(e) {
-                    e.preventDefault(); // Chặn văng tab mới
-
-                    const latQuan = this.getAttribute('data-lat');
-                    const lonQuan = this.getAttribute('data-lon');
-                    const name = this.parentElement.querySelector('h2').innerText;
-
-                    // Tọa độ Phú Nhuận fen đưa lúc nãy để test dự phòng
-                    const latPhuNhuan = 10.798729702621845;
-                    const lonPhuNhuan = 106.68679072704482;
-
-                    console.log("🛰️ Đang xin quyền GPS trên Github Pages...");
-
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(
-                            (position) => {
-                                const latKhach = position.coords.latitude;
-                                const lonKhach = position.coords.longitude;
-                                console.log(`📍 GPS thực tế: ${latKhach}, ${lonKhach}`);
-                                
-                                if (window.DalatOS_InAppMap) {
-                                    window.DalatOS_InAppMap.open(latKhach, lonKhach, latQuan, lonQuan, name);
-                                }
-                            },
-                            (error) => {
-                                console.warn("⚠️ Không lấy được GPS, tự động lấy tọa độ Phú Nhuận làm mẫu.");
-                                if (window.DalatOS_InAppMap) {
-                                    window.DalatOS_InAppMap.open(latPhuNhuan, lonPhuNhuan, latQuan, lonQuan, name);
-                                }
-                            },
-                            { enableHighAccuracy: true, timeout: 5000 }
-                        );
-                    } else {
-                        if (window.DalatOS_InAppMap) {
-                            window.DalatOS_InAppMap.open(latPhuNhuan, lonPhuNhuan, latQuan, lonQuan, name);
-                        }
-                    }
-                });
+        // Hàm kích hoạt khởi chạy Bot khi nạp trang xong
+        window.onload = () => {
+            if (typeof initBot === "function") {
+                initBot();
             }
-        });
+        };
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
 
+    <!-- 🚨 GIỮ NGUYÊN 100% PHẦN ĐUÔI SRC THEO YÊU CẦU CỦA FEN -->
     <script src="config.js"></script>
     <script src="widget.js"></script>
     <script src="chat.js"></script>
