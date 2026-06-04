@@ -32,34 +32,27 @@ async function handleChat() {
         </div>
     `);
 
-    // 🟢 THAY ĐỔI DUY NHẤT: Bọc logic gọi fetch vào vòng lặp tự động retry né server HK
     let data = null;
     let retries = 3; // Thử tối đa 3 lần nếu dính lỗi region
 
     while (retries > 0) {
         try {
-            // 🎯 LẤY GPS AN TOÀN (Ép buộc phải có số thực tế mới gửi lên Google)
+            // 🎯 LẤY GPS AN TOÀN
             let gpsInfo = "";
             const currentPos = (typeof window.userPos !== "undefined") ? window.userPos : (typeof userPos !== "undefined" ? userPos : null);
 
-            // Phải check kỹ xem có đúng là CHỨA SỐ (Number) không, tránh gửi chữ "undefined" lên Google
             if (currentPos && currentPos.lat && currentPos.lon && !isNaN(currentPos.lat) && !isNaN(currentPos.lon)) {
                 gpsInfo = `\n[VỊ TRÍ HIỆN TẠI CỦA KHÁCH]: Latitude ${currentPos.lat}, Longitude ${currentPos.lon}. Hãy dùng tọa độ này để tính khoảng cách và chỉ đường chính xác.`;
             } else {
-                // Nếu chưa có tọa độ chuẩn, gửi chuỗi thuần chữ này, tuyệt đối không kẹp biến undefined vào
                 gpsInfo = `\n[HỆ THỐNG]: Hiện chưa lấy được GPS thực tế, hãy hỏi khách đang ở khu nào ở Đà Lạt nếu cần tính khoảng cách.`;
             }
 
-            // Giao diện FE đã tính toán sẵn KM qua hàm của index, bốc thẳng thảy cho Bot hít cho nhanh
             let finalKnowledge = knowledgeBase;
             if (typeof window.layDataHienThiChoBot === "function") {
                 finalKnowledge = window.layDataHienThiChoBot();
             }
 
-            const response = await fetch(CONFIG.WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-// 🔥 ĐÂY LÀ KHÚC FETCH ĐÃ ĐƯỢC THAY THẾ FULL DÒNG BODY CHUẨN CHỈ:
+            // 🎯 KHÚC FETCH ĐÃ ĐƯỢC CHẮT LỌC VÀ SỬA ĐÚNG CÚ PHÁP SẠCH SẼ:
             const response = await fetch(CONFIG.WORKER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -73,7 +66,7 @@ async function handleChat() {
             if (response.ok) {
                 data = await response.json();
                 
-                // Kiểm tra xem chuỗi JSON trả về từ Google có chứa từ khóa chặn location (do rớt server HK) không
+                // Kiểm tra xem chuỗi JSON trả về từ Google có chứa từ khóa chặn location không
                 if (data && data.error && data.error.message && data.error.message.includes("location")) {
                     console.log("⚠️ Trúng server Cloudflare HK lỗi vị trí, đang tự động gửi lại...");
                     retries--;
@@ -98,13 +91,12 @@ async function handleChat() {
 
     try {
         let aiMsg = "";
-        // 🛠️ BẪY LỖI AN TOÀN: Check cấu trúc trả về xem nằm ở đâu để lấy ra chuỗi text
+        // 🛠️ BẪY LỖI AN TOÀN
         if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) {
             aiMsg = data.candidates[0].content.parts[0].text;
         } else if (data && data.text) {
             aiMsg = data.text;
         } else {
-            // Nếu sau 3 lần vẫn lỗi hoặc dính lỗi cấu trúc khác, in ra màn hình chat
             aiMsg = "⚠️ Thiết lập lỗi cấu trúc dữ liệu: " + JSON.stringify(data);
         }
         
@@ -124,7 +116,7 @@ async function handleChat() {
 
 function addMessage(role, content) {
     const chatBox = document.getElementById('chat-box');
-    if (!chatBox) return; // Tránh lỗi nếu widget chưa load kịp
+    if (!chatBox) return; 
     
     const div = document.createElement('div');
     div.className = `msg ${role}`;
@@ -137,7 +129,6 @@ function addMessage(role, content) {
 function saveMessage(role, content) {
     let history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY)) || { timestamp: Date.now(), messages: [] };
 
-    // Nếu quá 24h kể từ tin đầu tiên thì reset sạch
     if (Date.now() - history.timestamp > EXPIRY_TIME) {
         history = { timestamp: Date.now(), messages: [] };
     }
@@ -153,14 +144,12 @@ function loadChatHistory() {
         return;
     }
     
-    // Kiểm tra hết hạn 24h khi load lại trang
     if (Date.now() - history.timestamp > EXPIRY_TIME) {
         localStorage.removeItem(CHAT_STORAGE_KEY);
         addMessage('ai', "Chào fen! Tui là Thổ Địa đây. Fen muốn tìm quán gì hay lên lịch trình đi đâu không?");
         return;
     }
     
-    // Hiển thị lại toàn bộ các tin nhắn đã lưu
     history.messages.forEach(msg => {
         addMessage(msg.role, msg.content);
     });
