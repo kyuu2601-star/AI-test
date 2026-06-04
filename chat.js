@@ -59,11 +59,16 @@ async function handleChat() {
             const response = await fetch(CONFIG.WORKER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                // Sử dụng format tách biệt tương thích với Worker mới của fen
+// 🔥 ĐÂY LÀ KHÚC FETCH ĐÃ ĐƯỢC THAY THẾ FULL DÒNG BODY CHUẨN CHỈ:
+            const response = await fetch(CONFIG.WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    systemPrompt: CONFIG.SYSTEM_PROMPT(finalKnowledge) + gpsInfo,
+                    // Gọi hàm cha: truyền câu chat (text) vào trước để quét từ khóa, truyền CSV (finalKnowledge) vào sau
+                    systemPrompt: CONFIG.SYSTEM_PROMPT(text, finalKnowledge) + gpsInfo,
                     userMessage: text 
                 })
+            });
             });
 
             if (response.ok) {
