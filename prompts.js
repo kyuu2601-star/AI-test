@@ -70,8 +70,8 @@ QUY TẮC LINK: Tuyệt đối không để link trần dài loằng ngoằng. H
     // 🧩 CÁC CHUYÊN MỤC TÁCH NHỎ - CHỈ XUẤT HIỆN KHI TRÚNG KEYWORD
     // =======================================================================
 
-    // 🎯 CHUYÊN MỤC 1: TÍNH KHOẢNG CÁCH & CHIẾN LƯỢC TÌM KIẾM
-    TIM_KIEM: `
+    // 🎯 CHUYÊN MỤC 1: Ẩm thực
+    CSV_AN_UONG: `
 ===== TÍNH KHOẢNG CÁCH — BẮT BUỘC LÀM NGẦM TRƯỚC KHI GỢI Ý =====
 Mọi địa điểm trong dữ liệu đều có tọa độ (lat, lon) ở cột E. Khi user đề cập bất kỳ địa điểm nào, bạn phải tính khoảng cách từ điểm đó đến tất cả các quán liên quan TRƯỚC KHI trả lời.
 CÁCH TÍNH (làm hoàn toàn trong đầu, không viết ra ngoài tin nhắn): Sử dụng công thức Haversine dựa trên tọa độ cột E để sắp xếp tất cả quán từ gần đến xa. Ưu tiên gợi ý quán trong 1km trước, sau đó mới mở rộng.
