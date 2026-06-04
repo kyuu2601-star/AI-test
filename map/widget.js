@@ -27,13 +27,17 @@ open: function(latKhach, lonKhach, latQuan, lonQuan, tenQuan) {
                 return;
             }
 
+            // Cập nhật tiêu đề hiển thị tên quán ăn
             titleBox.innerText = `Đường đến: ${tenQuan}`;
 
-            // Link thô bẻ khóa không cần API Key - Đã fix chuẩn 100%
-            const embedUrl = `https://maps.google.com/maps?saddr=${latKhach},${lonKhach}&daddr=${latQuan},${lonQuan}&output=embed`;
+            // 🔥 CÚ PHÁP ĐÚNG 100% CỦA GOOGLE MAPS IFRAME DIRECTIONS KHÔNG CẦN API KEY:
+            // Cần có tham số q= đứng trước saddr và daddr để bẻ khóa Iframe của Google
+            const embedUrl = `https://maps.google.com/maps?q=${latQuan},${lonQuan}&saddr=${latKhach},${lonKhach}&daddr=${latQuan},${lonQuan}&output=embed`;
             
+            // Nạp link vào iframe
             iframe.src = embedUrl;
 
+            // Bật hiệu ứng hiển thị Popup Modal
             overlay.style.display = 'block';
             windowMap.style.display = 'flex';
             setTimeout(() => {
