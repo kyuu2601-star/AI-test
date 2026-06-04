@@ -31,8 +31,8 @@ open: function(latKhach, lonKhach, latQuan, lonQuan, tenQuan) {
             titleBox.innerText = `Đường đến: ${tenQuan}`;
 
             // 🔥 ĐÂY LÀ ĐOẠN LINK DIRECTION CHUẨN ĐÃ FIX CÚ PHÁP
-            // Dùng dấu backtick ` bọc ngoài, và cấu pháp ${biến} chuẩn chỉnh của JS
-            const embedUrl = `https://www.google.com/maps/embed/v1/directions?key=YOUR_API_KEY&origin=${latKhach},${lonKhach}&destination=${latQuan},${lonQuan}&mode=driving`;
+            // 🔥 SỬA CHÍNH XÁC DÒNG NÀY TRONG FILE WIDGET.JS TRÊN GITHUB CỦA FEN:
+            const embedUrl = `https://maps.google.com/maps?saddr=${latKhach},${lonKhach}&daddr=${latQuan},${lonQuan}&output=embed`;
             
             // 🚨 MẸO NẾU FEN CHƯA CÓ API KEY (Xài link thô này để không bị lỗi màn hình trắng):
             // const embedUrl = `https://maps.google.com/maps?saddr=${latKhach},${lonKhach}&daddr=${latQuan},${lonQuan}&output=embed`;
