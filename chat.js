@@ -2,7 +2,7 @@ let knowledgeBase = "";
 const CHAT_STORAGE_KEY = 'dalatos_chat_history';
 const EXPIRY_TIME = 24 * 60 * 60 * 1000; // 24 giờ tính bằng miliseconds
 
-window.onload = async () => {
+async function initBot() {
     // 1. Nạp dữ liệu CSV
     try {
         const res = await fetch(CONFIG.CSV_URL);
@@ -32,26 +32,77 @@ async function handleChat() {
         </div>
     `);
 
-    try {
-        // 🎯 LẤY GPS AN TOÀN (Không gây lỗi nếu thiếu userPos)
-        let gpsInfo = "";
-        if (typeof userPos !== "undefined" && userPos !== null && userPos.lat && userPos.lon) {
-            gpsInfo = `\n[VỊ TRÍ HIỆN TẠI CỦA KHÁCH]: Latitude ${userPos.lat}, Longitude ${userPos.lon}. Hãy dùng tọa độ này để tính khoảng cách và chỉ đường chính xác.`;
-        } else {
-            gpsInfo = `\n[HỆ THỐNG]: Hiện chưa lấy được GPS thực tế, hãy hỏi khách đang ở đâu nếu cần tính khoảng cách.`;
+    // 🟢 THAY ĐỔI DUY NHẤT: Bọc logic gọi fetch vào vòng lặp tự động retry né server HK
+    let data = null;
+    let retries = 3; // Thử tối đa 3 lần nếu dính lỗi region
+
+    while (retries > 0) {
+        try {
+            // 🎯 LẤY GPS AN TOÀN (Ép buộc phải có số thực tế mới gửi lên Google)
+            let gpsInfo = "";
+            const currentPos = (typeof window.userPos !== "undefined") ? window.userPos : (typeof userPos !== "undefined" ? userPos : null);
+
+            // Phải check kỹ xem có đúng là CHỨA SỐ (Number) không, tránh gửi chữ "undefined" lên Google
+            if (currentPos && currentPos.lat && currentPos.lon && !isNaN(currentPos.lat) && !isNaN(currentPos.lon)) {
+                gpsInfo = `\n[VỊ TRÍ HIỆN TẠI CỦA KHÁCH]: Latitude ${currentPos.lat}, Longitude ${currentPos.lon}. Hãy dùng tọa độ này để tính khoảng cách và chỉ đường chính xác.`;
+            } else {
+                // Nếu chưa có tọa độ chuẩn, gửi chuỗi thuần chữ này, tuyệt đối không kẹp biến undefined vào
+                gpsInfo = `\n[HỆ THỐNG]: Hiện chưa lấy được GPS thực tế, hãy hỏi khách đang ở khu nào ở Đà Lạt nếu cần tính khoảng cách.`;
+            }
+
+            // Giao diện FE đã tính toán sẵn KM qua hàm của index, bốc thẳng thảy cho Bot hít cho nhanh
+            let finalKnowledge = knowledgeBase;
+            if (typeof window.layDataHienThiChoBot === "function") {
+                finalKnowledge = window.layDataHienThiChoBot();
+            }
+
+            const response = await fetch(CONFIG.WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                // Sử dụng format tách biệt tương thích với Worker mới của fen
+                body: JSON.stringify({ 
+                    systemPrompt: CONFIG.SYSTEM_PROMPT(finalKnowledge) + gpsInfo,
+                    userMessage: text 
+                })
+            });
+
+            if (response.ok) {
+                data = await response.json();
+                
+                // Kiểm tra xem chuỗi JSON trả về từ Google có chứa từ khóa chặn location (do rớt server HK) không
+                if (data && data.error && data.error.message && data.error.message.includes("location")) {
+                    console.log("⚠️ Trúng server Cloudflare HK lỗi vị trí, đang tự động gửi lại...");
+                    retries--;
+                    if (retries > 0) {
+                        await new Promise(res => setTimeout(res, 300)); // Chờ 0.3s lắc xúc xắc lại tuyến đường
+                        continue;
+                    }
+                } else {
+                    // Nhận data sạch thành công, thoát khỏi vòng lặp retry
+                    break;
+                }
+            }
+        } catch (err) {
+            console.error("Lỗi kết nối mạng, đang thử lại...", err);
         }
+        
+        retries--;
+        if (retries > 0) {
+            await new Promise(res => setTimeout(res, 300));
+        }
+    }
 
-        const response = await fetch(CONFIG.WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            // ✅ Inject knowledgeBase và gpsInfo vào chung Prompt gửi đi
-            body: JSON.stringify({ 
-                message: CONFIG.SYSTEM_PROMPT(knowledgeBase) + gpsInfo + "\n\nKhách: " + text 
-            })
-        });
-
-        const data = await response.json();
-        const aiMsg = data.candidates[0].content.parts[0].text;
+    try {
+        let aiMsg = "";
+        // 🛠️ BẪY LỖI AN TOÀN: Check cấu trúc trả về xem nằm ở đâu để lấy ra chuỗi text
+        if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) {
+            aiMsg = data.candidates[0].content.parts[0].text;
+        } else if (data && data.text) {
+            aiMsg = data.text;
+        } else {
+            // Nếu sau 3 lần vẫn lỗi hoặc dính lỗi cấu trúc khác, in ra màn hình chat
+            aiMsg = "⚠️ Thiết lập lỗi cấu trúc dữ liệu: " + JSON.stringify(data);
+        }
         
         const loadingElement = document.getElementById(loadingId);
         if (loadingElement) {
