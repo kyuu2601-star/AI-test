@@ -27,24 +27,15 @@ open: function(latKhach, lonKhach, latQuan, lonQuan, tenQuan) {
                 return;
             }
 
-            // Đổi tiêu đề popup cho chuyên nghiệp
             titleBox.innerText = `Đường đến: ${tenQuan}`;
 
-            // 🔥 ĐÂY LÀ ĐOẠN LINK DIRECTION CHUẨN ĐÃ FIX CÚ PHÁP
-            // 🔥 SỬA CHÍNH XÁC DÒNG NÀY TRONG FILE WIDGET.JS TRÊN GITHUB CỦA FEN:
+            // Link thô bẻ khóa không cần API Key - Đã fix chuẩn 100%
             const embedUrl = `https://maps.google.com/maps?saddr=${latKhach},${lonKhach}&daddr=${latQuan},${lonQuan}&output=embed`;
             
-            // 🚨 MẸO NẾU FEN CHƯA CÓ API KEY (Xài link thô này để không bị lỗi màn hình trắng):
-            // const embedUrl = `https://maps.google.com/maps?saddr=${latKhach},${lonKhach}&daddr=${latQuan},${lonQuan}&output=embed`;
-
-            // Nạp link chuẩn vào iframe
             iframe.src = embedUrl;
 
-            // Bật hiệu ứng hiển thị Popup
             overlay.style.display = 'block';
             windowMap.style.display = 'flex';
-            
-            // Thêm class active để tạo hiệu ứng bung lên mượt mà
             setTimeout(() => {
                 windowMap.classList.add('active');
             }, 10);
