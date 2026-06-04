@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Chỉ Đường Thực Tế - DalatOS</title>
 
-    <link rel="stylesheet" href="https://raw.githack.com/kyuu2601-star/AI-test/main/map/map.css?v=1.0.4" />
+    <link rel="stylesheet" href="map/map.css" />
 
     <style>
         body {
@@ -65,7 +65,7 @@
         <p>📍 Điểm đến (Đà Lạt):<br>11.9422, 108.4322</p>
         <p style="font-size: 11px; color: #10b981;">🏁 Điểm đi mặc định (Phú Nhuận):<br>10.7987297, 106.6867907</p>
         
-        <a href="https://www.google.com/maps/place/Sushi+Haru/@10.7989157,106.6859115,18.67z/data=!4m6!3m5!1s0x317528d060403c3f:0xd2a69ffaed12fbb!8m2!3d10.79873!4d106.6867887!16s%2Fg%2F11dxpfzszr?entry=ttu&g_ep=EgoyMDI2MDUzMS4wIKXMDSoASAFQAw%3D%3D" 
+        <a href="#" 
            id="btn-test-map" 
            data-lat="11.9422" 
            data-lon="108.4322" 
@@ -74,64 +74,53 @@
         </a>
     </div>
 
-    <script src="https://raw.githack.com/kyuu2601-star/AI-test/main/map/widget.js?v=1.0.4"></script>
+    <script src="map/widget.js"></script>
 
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-        const btnChiDuong = document.getElementById('btn-test-map');
-        
-        if (btnChiDuong) {
-            btnChiDuong.addEventListener('click', function(e) {
-                e.preventDefault(); // Chặn đứng lệnh văng app ra ngoài tab mới
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const btnChiDuong = document.getElementById('btn-test-map');
+            
+            if (btnChiDuong) {
+                btnChiDuong.addEventListener('click', function(e) {
+                    e.preventDefault(); // Chặn văng tab mới
 
-                // 1. Bốc tọa độ ĐÍCH ĐẾN (Quán ăn) từ thuộc tính HTML có sẵn
-                const latQuan = this.getAttribute('data-lat');
-                const lonQuan = this.getAttribute('data-lon');
-                const name = this.parentElement.querySelector('h2').innerText;
+                    const latQuan = this.getAttribute('data-lat');
+                    const lonQuan = this.getAttribute('data-lon');
+                    const name = this.parentElement.querySelector('h2').innerText;
 
-                // Tọa độ Phú Nhuận dự phòng (nếu user chặn GPS)
-                const latPhuNhuan = 10.798729702621845;
-                const lonPhuNhuan = 106.68679072704482;
+                    // Tọa độ Phú Nhuận fen đưa lúc nãy để test dự phòng
+                    const latPhuNhuan = 10.798729702621845;
+                    const lonPhuNhuan = 106.68679072704482;
 
-                console.log("🛰️ Hệ thống bắt đầu xin quyền GPS để lấy vị trí của fen...");
+                    console.log("🛰️ Đang xin quyền GPS trên Github Pages...");
 
-                // 2. XIN QUYỀN VÀ NẠP GIÁ TRỊ THỰC TẾ VÀO BIẾN
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            // 🔥 ĐÂY RỒI: Khai báo và nạp trực tiếp giá trị từ chip GPS vào biến!
-                            const latKhach = position.coords.latitude;
-                            const lonKhach = position.coords.longitude;
-                            
-                            console.log(`📍 Đã gán tọa độ khách thành công: ${latKhach}, ${lonKhach}`);
-
-                            // 3. Truyền tất cả các biến đã có giá trị sang file widget.js để mở map
-                            if (window.DalatOS_InAppMap) {
-                                window.DalatOS_InAppMap.open(latKhach, lonKhach, latQuan, lonQuan, name);
-                            }
-                        },
-                        (error) => {
-                            console.warn("⚠️ Khách chặn quyền GPS, tự động lấy tọa độ Phú Nhuận làm biến latKhach.");
-                            
-                            // 🔥 CỨU VÃN: Nếu lỗi/chặn GPS, gán luôn tọa độ Phú Nhuận làm latKhach, lonKhach
-                            const latKhach = latPhuNhuan;
-                            const lonKhach = lonPhuNhuan;
-
-                            if (window.DalatOS_InAppMap) {
-                                window.DalatOS_InAppMap.open(latKhach, lonKhach, latQuan, lonQuan, name);
-                            }
-                        },
-                        { enableHighAccuracy: true, timeout: 5000 }
-                    );
-                } else {
-                    // Trình duyệt quá cũ không có GPS -> Dùng luôn tọa độ Phú Nhuận
-                    if (window.DalatOS_InAppMap) {
-                        window.DalatOS_InAppMap.open(latPhuNhuan, lonPhuNhuan, latQuan, lonQuan, name);
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                const latKhach = position.coords.latitude;
+                                const lonKhach = position.coords.longitude;
+                                console.log(`📍 GPS thực tế: ${latKhach}, ${lonKhach}`);
+                                
+                                if (window.DalatOS_InAppMap) {
+                                    window.DalatOS_InAppMap.open(latKhach, lonKhach, latQuan, lonQuan, name);
+                                }
+                            },
+                            (error) => {
+                                console.warn("⚠️ Không lấy được GPS, tự động lấy tọa độ Phú Nhuận làm mẫu.");
+                                if (window.DalatOS_InAppMap) {
+                                    window.DalatOS_InAppMap.open(latPhuNhuan, lonPhuNhuan, latQuan, lonQuan, name);
+                                }
+                            },
+                            { enableHighAccuracy: true, timeout: 5000 }
+                        );
+                    } else {
+                        if (window.DalatOS_InAppMap) {
+                            window.DalatOS_InAppMap.open(latPhuNhuan, lonPhuNhuan, latQuan, lonQuan, name);
+                        }
                     }
-                }
-            });
-        }
-    });
-</script>
+                });
+            }
+        });
+    </script>
 </body>
 </html>
