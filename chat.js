@@ -69,7 +69,6 @@ async function handleChat() {
                     userMessage: text 
                 })
             });
-            });
 
             if (response.ok) {
                 data = await response.json();
