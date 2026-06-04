@@ -135,6 +135,14 @@ const DALAT_KEYWORDS = {
         "khách sạn có bồn tắm", "khach san co bon tam", "chăn riêng", "chan rieng", "đem theo chăn riêng", "dem theo chan rieng", 
         "family room", "chỗ cho tài xế nghỉ", "cho cho tai xe nghi", "đặt vé trước", "dat ve truoc", "khỏi đứng chờ", "khoi dung cho",
         "nhận giữ xe tới khuya ko", "bãi xe đóng cửa mấy giờ"
+        // --- Cập nhật riêng cho case Khách sạn / Homestay / Resort ---
+        "khách sạn", "khach san", "ks", "homestay", "resort", "villa", "đặt phòng", "dat phong", "book phòng", "book phong",
+        "checkin", "checkout", "check in", "check out", "né giờ checkin", "ne gio checkin", "giờ check in", "gio check in",
+        "hỏi lễ tân", "hoi le tan", "gọi hotline", "goi hotline", "phòng gia đình", "phong gia dinh", "xin thêm chăn", "xin them chan",
+        "gối thêm", "goi them", "nước nóng lạnh", "nuoc nong lanh", "cách âm tốt", "cach am tot", "có ăn sáng kèm ko", "co an sang kem ko",
+        "hồ bơi nước ấm", "ho boi nuoc am", "nhận phòng sớm", "nhan phong som", "trả phòng muộn", "tra phong muon", "phụ thu", "phu thu",
+        "gần trung tâm dễ đậu xe ko", "gần chợ đêm có ồn", "khu chợ đêm có ồn không", "ngủ không được", "ngu khong duoc",
+        "homestay phù hợp gia đình", "homestay phu hop gia dinh", "gọi trước hỏi chỗ đậu ko", "bãi xe đóng cửa mấy h"
     ],
 
     // 🥶 5. Module: THOI_TIET (Nhiệt độ ngày đêm, quần áo giữ ấm, kịch bản ngày mưa)
