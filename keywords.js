@@ -192,7 +192,9 @@ const DALAT_KEYWORDS = {
         "đi đâu trước đi đâu sau", "di dau truoc di dau sau", "ngược đường", "nguoc duong", 
         "tiện đường", "tien duong", "thời gian biểu", "thoi gian bieu", "lt", 
         "đi Langbiang với trẻ con có mệt không", "di Langbiang voi tre con co met khong", 
-        "đi hồ tuyền lâm bao lâu", "di ho tuyen lam bao lau", "đi một ngày có đủ không", "di mot ngay co du khong"
+        "đi hồ tuyền lâm bao lâu", "di ho tuyen lam bao lau", "đi một ngày có đủ không", "di mot ngay co du khong",
+        "lich trinh", "lịch trình", "lên lịch", "len lich", "sắp xếp", "sap xep", "sap xep dia diem", "sấp xếp địa điểm",
+        "chọn chỗ", "chọn chỗ", "nên đi đâu", "nen đi đau"
     ],
 
     // 🛑 8. Module: CANH_BAO (Phá bẫy review ảo, né chợ đêm, chống lừa đảo dâu tây và đặc sản)
@@ -214,8 +216,8 @@ const DALAT_KEYWORDS = {
     GIAO_THONG: [
         "cuối tuần kẹt xe", "cuoi tuan ket xe", "đà lạt cuối tuần kẹt xe nhiều hong", "da lat cuoi tuan ket xe nhieu hong", 
         "tuyến đường tránh đông", "tuyen duong tranh dong", "mở cửa từ mấy giờ", "mo cua tu may gio", "đóng cửa", "dong cua", 
-        "mở sớm 5-6h sáng", "mo som 5-6h sang", "né giờ check-in", "ne gio check-in", "giờ check in", "gio check in", 
-        "xếp hàng", "xep hang", "đứng chờ ngoài đường", "dung cho ngoai duong", "camera giao thông", "camera giao thong", 
+        "mở sớm 5-6h sáng", "mo som 5-6h sang", "né giờ check-in", "ne gio check-in",
+        "đứng chờ ngoài đường", "dung cho ngoai duong", "camera giao thông", "camera giao thong", 
         "app xem camera", "app xem camera", "kẹt xe dữ ko", "né trung tâm cho đỡ đông ko", "chạy từ trung tâm qua đây bao lâu", 
         "xe đông nhất tầm mấy h để né", "ik sáng sớm cho đỡ kẹt ko", "cấm ô tô giờ nào ko", "dễ kẹt cứng ko", 
         "đường vòng nào dễ chạy hơn ko", "từ sân bay chạy lên mất bao lâu", "né giờ checkin ks ko", "đông nhưng đậu xe dễ v", 
