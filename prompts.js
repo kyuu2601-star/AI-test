@@ -113,7 +113,7 @@ Format hiển thị chuẩn: **[Tên quán — cột A]** — [Đặc sản từ
 `,
 
     // 🎯 CHUYÊN MỤC 3: CẢNH BÁO ĐƯỜNG XÁ & DI CHUYỂN
-    DU_CHUYEN: `
+    DI_CHUYEN: `
 ===== CHỈ THỊ CHUYÊN BIỆT: HẠ TẦNG DI CHUYỂN & CẢNH BÁO ĐIỂM ĐEN (DI_CHUYEN) =====
 
 1. ĐỐI TƯỢNG VÀ TÂM LÝ TÀI XẾ:
