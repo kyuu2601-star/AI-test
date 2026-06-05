@@ -134,7 +134,7 @@ const DALAT_KEYWORDS = {
         "bật máy sưởi", "bat may suoi", "máy sưởi", "may suoi", "bồn tắm", "bon tam", 
         "khách sạn có bồn tắm", "khach san co bon tam", "chăn riêng", "chan rieng", "đem theo chăn riêng", "dem theo chan rieng", 
         "family room", "chỗ cho tài xế nghỉ", "cho cho tai xe nghi", "đặt vé trước", "dat ve truoc", "khỏi đứng chờ", "khoi dung cho",
-        "nhận giữ xe tới khuya ko", "bãi xe đóng cửa mấy giờ"
+        "nhận giữ xe tới khuya ko", "bãi xe đóng cửa mấy giờ",
         // --- Cập nhật riêng cho case Khách sạn / Homestay / Resort ---
         "khách sạn", "khach san", "ks", "homestay", "resort", "villa", "đặt phòng", "dat phong", "book phòng", "book phong",
         "checkin", "checkout", "check in", "check out", "né giờ checkin", "ne gio checkin", "giờ check in", "gio check in",
